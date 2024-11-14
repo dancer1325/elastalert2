@@ -92,8 +92,9 @@ By setting ``realert``, you will prevent the same rule from alerting twice in an
     realert:
       days: 1
 
-You can also prevent duplicates based on a certain field by using ``query_key``. For example, to
-prevent multiple alerts for the same user, you might use
+* ``query_key``
+    * prevent duplicates
+    * _Example:_ prevent multiple alerts / SAME user
 
 .. code-block:: yaml
 
@@ -101,15 +102,15 @@ prevent multiple alerts for the same user, you might use
       hours: 8
     query_key: user
 
-Note that this will also affect the way many rule types work. If you are using ``type: frequency``
-for example, ``num_events`` for a single value of ``query_key`` must occur before an alert will be
-sent. You can also use a compound of multiple fields for this key. For example, if you only wanted
-to receieve an alert once for a specific error and hostname, you could use
+    * 👀-- affect -- way of working of many rule types 👀
+        * _Example:_ ``type: frequency`` & ``num_events`` & 1! value in ``query_key`` -> 1 hit MUST occur BEFORE the alert is sent
+        * _Example:_ ``type: frequency`` & ``num_events`` & SEVERAL values in ``query_key`` -> receive 1! alert / ALL values in ``query_key``
 
 .. code-block:: yaml
 
     query_key: [error, hostname]
 
+* TODO:
 You can also write in the following way.
 
 .. code-block:: yaml

@@ -1,0 +1,158 @@
+Writing Filters For Rules
+=========================
+
+* goal
+  * | your rule config file,
+    * how to create a `filter` section 
+
+* filters
+  * used | rules 
+    * == 👀[Elasticsearch query DSL](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html)👀
+  * are passed to Elasticsearch -- as --
+    ```
+    filter:
+      and:
+        filters:
+          - [filters -- from -- rule.yaml]
+    ```
+  * allows
+    * if result matches these filters -> passed -- to the -- rule for processing
+
+Common Filter Types:
+--------------------
+
+## `query_string`
+
+* follows the ⚠️[Lucene query format](http://lucene.apache.org/core/2_9_4/queryparsersyntax.html)⚠️
+* uses
+  * partial OR full matches
+  * MULTIPLE fields
+* _Example:_
+
+    ```
+    filter:
+    - query:
+        query_string:
+          query: "username: bob"
+    - query:
+        query_string:
+          query: "_type: login_logs"
+    - query:
+        query_string:
+          query: "field: value OR otherfield: othervalue"
+    - query:
+        query_string:
+           query: "this: that AND these: those"
+    ```
+
+## `term`
+
+* allows for
+  * EXACT field matches
+* _Example:_
+
+    ```
+    filter:
+    - term:
+        name_field: "bob"
+    - term:
+        _type: "login_logs"
+    ```
+
+* if a field is analyzed -> ❌`term` may NOT behave as expected❌ 
+* By default, many string fields will be tokenized by whitespace, and a term query for "foo bar" may not match
+a field that appears to have the value "foo bar", unless it is not analyzed
+* Conversely, a term query for "foo" will match analyzed strings "foo bar" and "foo baz"
+* For full text
+matching on analyzed fields, use query_string
+* See https://www.elastic.co/guide/en/elasticsearch/guide/current/term-vs-full-text.html
+
+## [`terms`](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-terms-query.html)
+
+Terms allows for easy combination of multiple term filters::
+
+    filter:
+    - terms:
+        field: ["value1", "value2"] # value1 OR value2
+
+You can also match on multiple fields (All terms must match at least one of the given values)::
+
+    - terms:
+        fieldX: ["value1", "value2"]
+    - terms:
+        fieldY: ["something", "something_else"]
+    - terms:
+        fieldZ: ["foo", "bar", "baz"]
+
+## `wildcard`
+
+For wildcard matches::
+
+    filter:
+    - query:
+        wildcard:
+          field: "foo*bar"
+
+## `range`
+
+For ranges on fields::
+
+    filter:
+    - range:
+        status_code:
+          from: 500
+          to: 599
+
+## Negation, and, or
+
+Below is a more complex example for Elasticsearch 7.x, provided by a `community user. <https://github.com/jertel/elastalert2/discussions/330>`_::
+
+    filter:
+    - term:
+        action: order
+    - terms:
+        dining:
+            - pickup
+            - delivery
+    - bool:
+        #exclude common/expected orders
+        must_not:
+            #Alice usually gets a pizza
+            - bool:
+                must: [ {term: {uid: alice}}, {term: {menu_item: pizza}} ]
+            #Bob loves his hoagies 
+            - bool:
+                must: [ {term: {uid: bob}}, {term: {menu_item: sandwich}} ]
+            #Charlie has a few favorites
+            - bool:
+                must:
+                   - term:
+                       uid: charlie
+                   - match:
+                       menu_item: "burrito pasta salad pizza"
+
+## `EQL` (Event Query Language)
+
+EQL is partially supported as of version 2.12.0. To use EQL, include a filter item as follows::
+
+    filter:
+    - eql: any where machine.os == "win 8"
+
+Note that only one ``eql`` filter can be defined in a filter.
+
+It is also possible to use standard query filters in combination with EQL filters::
+
+    filter:
+    - eql: any where machine.os == "win 8"
+    - query:
+        query_string:
+            query: "test.field: 123"
+
+EQL is only partially supported due to the following limitations:
+
+- Cannot be used with aggregation rule types.
+- Cannot be used with blacklist/whitelist rule types.
+- Cannot be used with percentage match rule types.
+- Cannot be used with ``use_count_query`` property.
+- Does not support scrolling, so large result sets may have unexpected results. Be sure to filter your queries thoroughly to avoid returning excessive numbers of events.
+- Not supported with OpenSearch

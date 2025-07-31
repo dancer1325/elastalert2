@@ -224,11 +224,9 @@ Example usage::
 
 .. _alert_types:
 
-Alert Types
-===========
+# Alert Types
 
-Alerta
-~~~~~~
+## Alerta
 
 Alerta alerter will post an alert in the Alerta server instance through the alert API endpoint.
 See https://docs.alerta.io/api/reference.html#alerts for more details on the Alerta JSON format.
@@ -747,11 +745,12 @@ Example usage::
     discord_embed_footer: "Message sent by  from your computer"
     discord_embed_icon_url: "https://humancoders-formations.s3.amazonaws.com/uploads/course/logo/38/thumb_bigger_formation-elasticsearch.png"
 
-Email
-~~~~~
+## Email
 
-This alert will send an email. It connects to an smtp server located at ``smtp_host``, or localhost by default.
-If available, it will use STARTTLS.
+* send an email
+* connects -- to -- smtp server /
+  * by default, ``smtp_host`` OR localhost 
+* if AVAILABLE -> use STARTTLS
 
 This alert requires one additional option:
 
@@ -847,8 +846,7 @@ Example assets_dir, email_image_keys, email_image_values::
 	email_image_keys: ["img1"]
 	email_image_values: ["my_logo.png"]
 
-Exotel
-~~~~~~
+## Exotel
 
 Developers in India can use the Exotel alerter, which can send an alert to a mobile phone as an SMS from your ExoPhone. The SMS will contain both the alert name and the specified message body.
 

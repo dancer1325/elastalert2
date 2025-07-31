@@ -1,129 +1,59 @@
-.. _tutorial:
-
-Getting Started
-***************
-
-ElastAlert 2 can easily be run as :ref:`a Docker container<docker-instructions>`
-or directly on your machine as :ref:`a Python package<python-instructions>`.
-If you are not interested in modifying the internals of  ElastAlert 2, the Docker
-container is recommended for ease of use.
-
-.. _docker-instructions:
+* ways to run ElastAlert 2
+  * as [docker container](#as-a-docker-container)
+    * 👀if you do NOT want to modify the ElastAlert 2's internals -> recommended option👀 
+  * | [your machine](#as-a-python-package)
 
 As a Docker container
 =====================
 
-If you're interested in a pre-built Docker image check out the
-elastalert2 container image on `Docker Hub <https://hub.docker.com/r/jertel/elastalert2>`_ or `GitHub Container Registry <https://github.com/jertel/elastalert2/pkgs/container/elastalert2%2Felastalert2>`_. Both images are published for each release. Use GitHub Container Registry if you are running into Docker Hub usage limits.
+* pre-built elastalert2 Docker container image
+  * find | 
+    * [DockerHub](https://hub.docker.com/r/jertel/elastalert2)
+    * [GitHub Container Registry](https://github.com/jertel/elastalert2/pkgs/container/elastalert2%2Felastalert2)
+      * 👀if you are running into Docker Hub usage limits -> recommended option👀
+  * "latest" tag == latest commit | master branch
 
-Be aware that the ``latest`` tag of the image represents the latest commit into
-the master branch. If you prefer to upgrade more slowly you will need utilize a
-versioned tag, such as ``2.25.0`` instead, or ``2`` if you are comfortable with
-always using the latest released version of ElastAlert 2.
+* requirements
+  * start up Elasticsearch container
+  * | container startup, 
+    * mount
+      * "config.yaml"   
+        * [template](/examples/config.yaml.example)
+      * "rule/"
+        * == directory / contains "ruleFiles.yaml"
+        * _Example:_ [here](/examples/rules)
+      * _Example of structure:_ [here](/examples/volumeToMountInContainerStartup)
 
-A properly configured config.yaml file must be mounted into the container during
-startup of the container. Use the `example file
-<https://github.com/jertel/elastalert2/blob/master/examples/config.yaml.example>`_
-as a template.
+  * Elasticsearch container & ElastAlert2 container use the default Docker network -- `es_default` --
 
-The following example assumes Elasticsearch container has already been started with Docker. 
-This example also assumes both the Elasticsearch and ElastAlert2 containers are using the default Docker network: ``es_default``
+## how to build the image?
 
-Create a rule directory and rules file in addition to elastalert.yaml, and then mount both into the ElastAlert 2 container:
+```
+docker build . -t elastalert2
+```
 
-.. code-block::
+## ways to start
+### -- via -- Docker Hub
 
-    elastalert.yaml
-    rules/
-      a.yaml
+```
+docker run --net=es_default -d --name elastalert --restart=always \
+-v $(pwd)/elastalert.yaml:/opt/elastalert/config.yaml \
+-v $(pwd)/rules:/opt/elastalert/rules \
+jertel/elastalert2 --verbose
 
-elastalert.yaml
+docker logs -f elastalert
+```
 
-.. code-block::
+### -- via -- GitHub Container Registry
 
-    rules_folder: /opt/elastalert/rules
+```
+docker run --net=es_default -d --name elastalert --restart=always \
+-v $(pwd)/elastalert.yaml:/opt/elastalert/config.yaml \
+-v $(pwd)/rules:/opt/elastalert/rules \
+ghcr.io/jertel/elastalert2/elastalert2 --verbose
 
-    run_every:
-      seconds: 10
-
-    buffer_time:
-      minutes: 15
-
-    es_host: elasticsearch
-    es_port: 9200
-
-    writeback_index: elastalert_status
-
-    alert_time_limit:
-      days: 2
-
-a.yaml
-
-.. code-block::
-
-    name: "a"
-    type: "frequency"
-    index: "mariadblog-*"
-    is_enabled: true
-    num_events: 2
-    realert:
-      minutes: 5
-    terms_size: 50
-    timeframe:
-      minutes: 5
-    timestamp_field: "@timestamp"
-    timestamp_type: "iso"
-    use_strftime_index: false
-    alert_subject: "Test {} 123 aa☃"
-    alert_subject_args:
-      - "message"
-      - "@log_name"
-    alert_text: "Test {}  123 bb☃"
-    alert_text_args:
-      - "message"
-    filter:
-      - query:
-          query_string:
-            query: "@timestamp:*"
-    alert:
-      - "slack"
-    slack_webhook_url: 'https://hooks.slack.com/services/xxxxxxxxx'
-    slack_channel_override: "#abc"
-    slack_emoji_override: ":kissing_cat:"
-    slack_msg_color: "warning"
-    slack_parse_override: "none"
-    slack_username_override: "elastalert"
-
-Starting the container via Docker Hub (hub.docker.com)
-
-.. code-block::
-
-    docker run --net=es_default -d --name elastalert --restart=always \
-    -v $(pwd)/elastalert.yaml:/opt/elastalert/config.yaml \
-    -v $(pwd)/rules:/opt/elastalert/rules \
-    jertel/elastalert2 --verbose
-
-    docker logs -f elastalert
-
-Starting the container via GitHub Container Registry (ghcr.io)
-
-.. code-block::
-
-    docker run --net=es_default -d --name elastalert --restart=always \
-    -v $(pwd)/elastalert.yaml:/opt/elastalert/config.yaml \
-    -v $(pwd)/rules:/opt/elastalert/rules \
-    ghcr.io/jertel/elastalert2/elastalert2 --verbose
-
-    docker logs -f elastalert
-
-For developers, the below command can be used to build the image locally:
-
-.. code-block::
-
-    docker build . -t elastalert2
-
-
-.. _kubernetes-instructions:
+docker logs -f elastalert
+```
 
 As a Kubernetes deployment
 ==========================
@@ -211,53 +141,40 @@ run, otherwise ElastAlert 2 will attempt to load the other rules in the ``exampl
 Creating a Rule
 ===============
 
-Each rule defines a query to perform, parameters on what triggers a match, and a
-list of alerts to fire for each match. We are going to use
-``examples/rules/example_frequency.yaml`` as a template::
-
-    # From examples/rules/example_frequency.yaml
-    es_host: elasticsearch.example.com
-    es_port: 14900
-    name: Example rule
-    type: frequency
-    index: logstash-*
-    num_events: 50
-    timeframe:
-      hours: 4
-    filter:
-    - term:
-        some_field: "some_value"
-    alert:
-    - "email"
-    email:
-    - "elastalert@example.com"
-
-``es_host`` and ``es_port`` should point to the Elasticsearch cluster we want to
-query.
-
-``name`` is the unique name for this rule. ElastAlert 2 will not start if two
-rules share the same name.
-
-``type``: Each rule has a different type which may take different parameters.
-The ``frequency`` type means "Alert when more than ``num_events`` occur within
-``timeframe``." For information other types, see :ref:`Rule types <ruletypes>`.
-
-``index``: The name of the index(es) to query. If you are using Logstash, by
-default the indexes will match ``"logstash-*"``.
-
-``num_events``: This parameter is specific to ``frequency`` type and is the
-threshold for when an alert is triggered.
-
-``timeframe`` is the time period in which ``num_events`` must occur.
-
-``filter`` is a list of Elasticsearch filters that are used to filter results.
-Here we have a single term filter for documents with ``some_field`` matching
-``some_value``. See :ref:`Writing Filters For Rules <writingfilters>` for more
-information. If no filters are desired, it should be specified as an empty list:
-``filter: []``
-
-``alert`` is a list of alerts to run on each match. For more information on
-alert types, see :ref:`Alert Types <alert_types>`. The email alert requires an SMTP server
+* rule
+  * == query to perform + parameters | trigger a match + alerts to fire / EACH match
+  * _Example:_ ["example_frequency.yaml"](/examples/rules/example_frequency.yaml)
+  * POSSIBLE fields -- to -- specify
+    * `es_host` & `es_port`
+      * == Elasticsearch cluster / we want to query
+    * `name`
+      * this rule's unique name 
+      * ❌if 2 rules have the SAME name -> ElastAlert 2 will NOT start❌
+    * `type`
+      * DIFFERENT typeS / EACH rule
+      * can take DIFFERENT parameters
+      * built-in
+        * `frequency` type
+          * if there are > `num_events` | `timeframe` -> match
+        * [list](ruletypes.md)
+    * `index`
+      * == index(es)' name -- to -- query
+      * if you are using Logstash -> by default,`"logstash-*"`
+    * `num_events`
+      * ⚠️requirements⚠️
+        * `frequency` type
+        * `num_events`
+      * == threshold | alert is triggered
+    * `timeframe`
+      * == time period | `num_events` MUST occur
+    * `filter`
+      * == list of Elasticsearch filters / filter results
+        * ⚠️if you do NOT need it -> set `filter: []`⚠️
+      * [here](recipes/writing_filters.md)
+    * `alert`
+      * == list of alerts / run | EACH match
+      * [alert types](alerts.md#alert-types)
+      * The email alert requires an SMTP server
 for sending mail. By default, it will attempt to use localhost. This can be
 changed with the ``smtp_host`` option.
 

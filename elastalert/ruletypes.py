@@ -523,7 +523,7 @@ class SpikeRule(RuleType):
     def find_matches(self, ref, cur):
         """ Determines if an event spike or dip happening. """
         # Apply threshold limits
-        if self.field_value is None:
+        if self.field_value is None and cur is not None and ref is not None:
             if (cur < self.rules.get('threshold_cur', 0) or
                     ref < self.rules.get('threshold_ref', 0)):
                 return False
@@ -1146,6 +1146,10 @@ class MetricAggregationRule(BaseAggregationRule):
                     # add compound key to payload to allow alerts to trigger for every unique occurence
                     compound_value = [match_data[key] for key in self.rules['compound_query_key']]
                     match_data[self.rules['query_key']] = ",".join([str(value) for value in compound_value])
+                    metric_format_string = self.rules.get('metric_format_string', None)
+                    if metric_format_string:
+                        match_data[self.metric_key +'_formatted'] = format_string(metric_format_string, metric_val)
+                        match_data['metric_agg_value_formatted'] = format_string(metric_format_string, metric_val)
                     self.add_match(match_data)
 
     def crossed_thresholds(self, metric_value):

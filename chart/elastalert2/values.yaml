@@ -16,6 +16,11 @@ appKubernetesIoComponent: elastalert2
 # number of replicas to run
 replicaCount: 1
 
+# update strategy to use (default : RollingUpdate) but can be Recreate
+updateStrategy:
+  type: RollingUpdate
+  rollingUpdate: {}
+
 # number of helm release revisions to retain
 revisionHistoryLimit: 5
 
@@ -49,7 +54,7 @@ image:
   # docker image
   repository: jertel/elastalert2
   # docker image tag
-  tag: 2.20.0
+  tag: 2.25.0
   pullPolicy: IfNotPresent
   pullSecret: ""
 
@@ -218,6 +223,12 @@ rules: {}
   #   pagerduty:
   #   pagerduty_service_key: dummy
   #   pagerduty_client_name: ElastAlert Deadman Switch
+
+# Probes configuration
+livenessProbe:
+  enabled: false
+readinessProbe:
+  enabled: false
 
 serviceAccount:
   # Specifies whether a service account should be created

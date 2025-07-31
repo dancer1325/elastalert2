@@ -8,7 +8,7 @@ from setuptools import setup
 base_dir = os.path.dirname(__file__)
 setup(
     name='elastalert2',
-    version='2.20.0',
+    version='2.25.0',
     description='Automated rule-based alerting for Elasticsearch',
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
@@ -31,7 +31,7 @@ setup(
                             'elastalert=elastalert.elastalert:main']},
     packages=find_packages(exclude=["tests"]),
     package_data={'elastalert': ['schema.yaml', 'es_mappings/**/*.json']},
-    python_requires='>=3.13',
+    python_requires='>=3.12',
     install_requires=[
         'apscheduler>=3.10.4,<4.0',
         'aws-requests-auth>=0.4.3',

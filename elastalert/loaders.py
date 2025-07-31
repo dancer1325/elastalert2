@@ -8,6 +8,7 @@ import sys
 import jsonschema
 import yaml
 import yaml.scanner
+from elastalert.alerters.flashduty import FlashdutyAlerter
 from jinja2 import Environment
 from jinja2 import FileSystemLoader
 from jinja2 import Template
@@ -27,7 +28,6 @@ import elastalert.alerters.httppost
 import elastalert.alerters.httppost2
 import elastalert.alerters.iris
 import elastalert.alerters.lark
-import elastalert.alerters.line
 import elastalert.alerters.pagertree
 import elastalert.alerters.rocketchat
 import elastalert.alerters.servicenow
@@ -37,6 +37,7 @@ import elastalert.alerters.telegram
 import elastalert.alerters.thehive
 import elastalert.alerters.twilio
 import elastalert.alerters.victorops
+import elastalert.alerters.webex_webhook
 import elastalert.alerters.workwechat
 from elastalert import alerts
 from elastalert import enhancements
@@ -49,9 +50,11 @@ from elastalert.alerters.mattermost import MattermostAlerter
 from elastalert.alerters.opsgenie import OpsGenieAlerter
 from elastalert.alerters.pagerduty import PagerDutyAlerter
 from elastalert.alerters.slack import SlackAlerter
+from elastalert.alerters.smseagle import SMSEagleAlerter
 from elastalert.alerters.sns import SnsAlerter
 from elastalert.alerters.teams import MsTeamsAlerter
 from elastalert.alerters.powerautomate import MsPowerAutomateAlerter
+from elastalert.alerters.yzj import YzjAlerter
 from elastalert.alerters.zabbix import ZabbixAlerter
 from elastalert.alerters.tencentsms import TencentSMSAlerter
 from elastalert.alerters.indexer import IndexerAlerter
@@ -128,12 +131,12 @@ class RulesLoader(object):
         'post': elastalert.alerters.httppost.HTTPPostAlerter,
         'post2': elastalert.alerters.httppost2.HTTPPost2Alerter,
         'pagertree': elastalert.alerters.pagertree.PagerTreeAlerter,
-        'linenotify': elastalert.alerters.line.LineNotifyAlerter,
         'hivealerter': elastalert.alerters.thehive.HiveAlerter,
         'zabbix': ZabbixAlerter,
         'discord': elastalert.alerters.discord.DiscordAlerter,
         'dingtalk': elastalert.alerters.dingtalk.DingTalkAlerter,
         'lark': elastalert.alerters.lark.LarkAlerter,
+        'webex_webhook': elastalert.alerters.webex_webhook.WebexWebhookAlerter,
         'workwechat': elastalert.alerters.workwechat.WorkWechatAlerter,
         'chatwork': elastalert.alerters.chatwork.ChatworkAlerter,
         'datadog': elastalert.alerters.datadog.DatadogAlerter,
@@ -143,6 +146,9 @@ class RulesLoader(object):
         'iris': elastalert.alerters.iris.IrisAlerter,
         'indexer': IndexerAlerter,
         'matrixhookshot': MatrixHookshotAlerter,
+        'yzj': YzjAlerter,
+        'flashduty': FlashdutyAlerter,
+        'smseagle': SMSEagleAlerter
     }
 
     # A partial ordering of alert types. Relative order will be preserved in the resulting alerts list

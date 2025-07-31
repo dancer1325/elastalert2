@@ -120,6 +120,10 @@ Rule Configuration Cheat Sheet
 +--------------------------------------------------------------+           |
 | ``include_fields`` (list of strs, no default)                |           |
 +--------------------------------------------------------------+           |
+| ``include_rule_params_in_matches`` (list of strs, no default)|           |
++--------------------------------------------------------------+           |
+| ``include_rule_params_in_first_match_only`` (boolean, False) |           |
++--------------------------------------------------------------+           |
 | ``filter`` (ES filter DSL, no default)                       |           |
 +--------------------------------------------------------------+           |
 | ``max_query_size`` (int, default global max_query_size)      |           |
@@ -526,6 +530,17 @@ aggregate_by_match_time
 Setting this to true will cause aggregations to be created relative to the timestamp of the first event, rather than the current time. This
 is useful for querying over historic data or if using a very large buffer_time and you want multiple aggregations to occur from a single query.
 
+aggregation_alert_time_compared_with_timestamp_field
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+``aggregation_alert_time_compared_with_timestamp_field``: This option controls how aggregation works when a rule processes events
+older than ``current time - aggregation window`` and ``aggregate_by_match_time`` is set to true. Defaults to false.
+When false, the expected send timestamp of the pending alert (waiting for additional events to aggregate) is compared with the current time.
+As a result, following events will not be aggregated with the pending alert, because it is considered already notified,
+leading to past events being notified one by one instead of being grouped together.
+When true, it allows the aggregation of events with old timestamps, as long as they are within the aggregation window.
+(Optional, boolean, default false)
+
 realert
 ^^^^^^^
 
@@ -613,6 +628,26 @@ include_fields
 ``include_fields``: A list of fields that should be included in query results and passed to rule types and alerts. If ``_source_enabled`` is False,
 only these fields and those from ``include`` are included.  When ``_source_enabled`` is True, these are in addition to source.  This is used
 for runtime fields, script fields, etc.  This only works with Elasticsearch version 7.11 and newer.  (Optional, list of strings, no default)
+
+include_rule_params_in_matches
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+``include_rule_params_in_matches``: This is an optional list of rule parameter names that will have their values copied from the rule into the match records prior to sending out alerts. This allows alerters to have access to specific data in the originating rule. The parameters will be keyed into the match with a ``rule_param_`` prefix. For example, if the ``name`` rule parameter is specified in this list, the match record will have access to the rule name via the ``rule_param_name`` field. Including parameters with complex types, such as maps (Dictionaries) or lists (Arrays) can cause problems if the alerter is unable to convert these into formats that it needs. For example, including the ``query_key`` list parameter in matches that use the http_post2 alerter can cause JSON serialization errors.
+
+.. note::
+
+    That this option can cause performance to degrade when a rule is triggered with many matching records since each match record will need to have the rule parameter data copied into it. See the ``include_rule_params_in_first_match_only`` boolean setting, which can mitigate this performance degradation. This performance degradation is more likely to occur with aggregated alerts.
+
+Example::
+
+    include_rule_params_in_matches:
+    - name
+    - some_custom_param
+
+include_rule_params_in_first_match_only
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+``include_rule_params_in_first_match_only``: When using the ``include_rule_params_in_matches`` setting mentioned above, optionally set to this setting to ``True`` to only copy the rule parameters into the first match record. This is primarily useful for aggregation rules that match hundreds or thousands of records during each run, and where only the first match is used in the alerter. The effectiveness of this setting is dependent upon which alerter(s) are being used. For example, using this setting with ``True`` in a rule that uses the http_post2 alerter will not be useful, since that alerter simply iterates across all matches and POSTs them to the HTTP URL. This would cause only the first POST to have the additional rule parameter values.
 
 top_count_keys
 ^^^^^^^^^^^^^^
@@ -741,22 +776,21 @@ kibana_discover_security_tenant
 kibana_discover_version
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-``kibana_discover_version``: Specifies the version of the Kibana Discover application.
+``kibana_discover_version``: Older version of Kibana use an obsolete URL shortener API. If using a version between 7.0 and 7.15 you must specify that major and minor version here.
 
-The currently supported versions of Kibana Discover are:
+Note that ElastAlert 2 only supports Kibana version 7.0 or newer.
 
-- `7.0`, `7.1`, `7.2`, `7.3`, `7.4`, `7.5`, `7.6`, `7.7`, `7.8`, `7.9`, `7.10`, `7.11`, `7.12`, `7.13`, `7.14`, `7.15`, `7.16`, `7.17`
-- `8.0`, `8.1`, `8.2`, `8.3`, `8.4`, `8.5`, `8.6`, `8.7`, `8.8`, `8.9` , `8.10` , `8.11` , `8.12` , `8.13`, `8.14`, `8.15` 
+Example:
 
 ``kibana_discover_version: '7.15'``
 
 kibana_discover_index_pattern_id
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-``kibana_discover_index_pattern_id``: The id of the index pattern to link to in the Kibana Discover application.
-These ids are usually generated and can be found in url of the index pattern management page, or by exporting its saved object.
+``kibana_discover_index_pattern_id``: The id of the data view to link to in the Kibana Discover application.
+These ids are usually generated and can be found in url of the ``Data Views`` page, or by exporting its saved object.
 
-In this documentation all references of "index pattern" refer to the similarly named concept in Kibana 8 called "data view".
+In this documentation all references of "index pattern" refer to the similarly named concept in Kibana 8+ called "data view".
 
 Example export of an index pattern's saved object:
 
@@ -855,11 +889,11 @@ This value should be relative to the base opensearch url defined by ``opensearch
 opensearch_discover_version
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-``opensearch_discover_version``: Specifies the version of the opensearch Discover application.
+``opensearch_discover_version``: Specifies the version of the opensearch Discover application. Currently unused.
 
-The currently supported versions of opensearch Discover are:
+Note that ElastAlert 2 only supports Discover version 2.11 or newer.
 
-- `2.11`
+Example:
 
 ``opensearch_discover_version: '2.11'``
 
@@ -1647,7 +1681,7 @@ This rule requires:
 ``match_bucket_filter``: ES filter DSL. This defines a filter for the match bucket, which should match a subset of the documents returned by the
 main query filter.
 
-ssThis rule also requires at least one of the two following options:
+This rule also requires at least one of the two following options:
 
 ``min_percentage``: If the percentage of matching documents is less than this number, an alert will be triggered.
 

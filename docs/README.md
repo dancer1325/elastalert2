@@ -1,12 +1,11 @@
 # Documentation
 
-You can read this documentation at [Read The Docs][0].
+* [here](source)
+* hosted [here](https://elastalert2.readthedocs.io/en/latest/)
+* how to build?
 
-To build a local version of these docs, the following from within the `/docs` directory:
-
-```
-pip install sphinx_rtd_theme sphinx
-make html
-```
-
-You can then view the generated HTML in from within the `build/` folder.
+    ```
+    pip install sphinx_rtd_theme sphinx
+    make html
+    ```
+  * generated HTML | "build/"

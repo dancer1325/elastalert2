@@ -1805,13 +1805,7 @@ Optional:
 
 ``opsgenie_priority``: Set the OpsGenie priority level. Possible values are P1, P2, P3, P4, P5. Can be formatted with fields from the first match e.g "P{level}"
 
-* ``opsgenie_details``
-    * == Map of custom key/value pairs /
-        * include | alert's details
-        * allowed values
-            * first match's fields,
-            * environment variables,
-            * constant value
+``opsgenie_details``: Map of custom key/value pairs to include in the alert's details. The value can sourced from either fields in the first match, environment variables, or a constant value.
 
 ``opsgenie_proxy``: By default ElastAlert 2 will not use a network proxy to send notifications to OpsGenie. Set this option using ``hostname:port`` if you need to use a proxy. only supports https.
 

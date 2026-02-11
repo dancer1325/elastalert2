@@ -1,94 +1,34 @@
 .. _Alerts:
 
-Alerts
-******
-
-Each rule may have any number of alerts attached to it. Alerts are subclasses of ``Alerter`` and are passed
-a dictionary, or list of dictionaries, from ElastAlert 2 which contain relevant information. They are configured
-in the rule configuration file similarly to rule types.
-
-To set the alerts for a rule, set the ``alert`` option to the name of the alert, or a list of the names of alerts:
-
-``alert: email``
-
-or
-
-.. code-block:: yaml
-
+* Alerts
+  * exist ANY number of alerts / EACH rule
+  * == subclasses of `Alerter`
+    * 's inputs
+      * \>=1 dictionaries
+  * configured | rule configuration file
+    * == rule types
+  * steps
+    * | rule file
+    
+    ```yaml
+    # 1.    1 alert
+    alert: alertValidName
+    
+    # OR
+    # 2.    >=1 alertS
     alert:
       - alerta
       - alertmanager
-      - chatwork
-      - command
-      - datadog
-      - debug
-      - dingtalk
-      - discord
-      - email
-      - exotel
-      - flashduty
-      - gitter
-      - googlechat
-      - gelf
-      - hivealerter
-      - indexer
-      - iris
-      - jira
-      - lark
-      - matrixhookshot
-      - mattermost
-      - ms_teams
-      - ms_power_automate
-      - opsgenie
-      - pagerduty
-      - pagertree
-      - post
-      - post2
-      - rocketchat
-      - servicenow
-      - ses
-      - slack
-      - smseagle
-      - sns
-      - stomp
-      - telegram
-      - tencent_sms
-      - twilio
-      - victorops
-      - webex_webhook
-      - workwechat
-      - zabbix
-      - yzj
+      - ...
+      - alertmanager:
+          # OPTIONAL to configure
+          specicKey: "specificValue"
+    ```
 
-Options for each alerter can either defined at the top level of the YAML file, or nested within the alert name, allowing for different settings
-for multiple of the same alerter. For example, consider sending multiple emails, but with different 'To' and 'From' fields:
+# Alert Subject
 
-.. code-block:: yaml
-
-    alert:
-     - email
-    from_addr: "no-reply@example.com"
-    email: "customer@example.com"
-
-versus
-
-.. code-block:: yaml
-
-    alert:
-     - email:
-         from_addr: "no-reply@example.com"
-         email: "customer@example.com"
-     - email:
-         from_addr: "elastalert@example.com""
-         email: "devs@example.com"
-
-If multiple of the same alerter type are used, top level settings will be used as the default and inline settings will override those
-for each alerter.
-
-Alert Subject
-=============
-
-E-mail subjects, Jira issue summaries, PagerDuty alerts, or any alerter that has a "subject" can be customized by adding an ``alert_subject``
+* TODO:
+* E-mail subjects, Jira issue summaries, PagerDuty alerts, or any alerter that has a "subject" can be customized by adding an ``alert_subject``
 that contains a custom summary.
 It can be further formatted using standard Python formatting syntax::
 
@@ -108,8 +48,7 @@ In case the rule matches multiple objects in the index, only the first match is 
 
 If the field(s) mentioned in the arguments list are missing, the email alert will have the text ``alert_missing_value`` in place of its expected value. This will also occur if ``use_count_query`` is set to true.
 
-Alert Content
-=============
+# Alert Content
 
 There are several ways to format the body text of the various types of events. In EBNF::
 
@@ -211,8 +150,7 @@ You would then access the fields as follows::
     data.tax
     data.total
 
-Alerter Base Type
-=================
+# Alerter Base Type
 
 For all Alerter subclasses, you may reference values from a top-level rule property in your Alerter fields by referring to the property name surrounded by dollar signs. This can be useful when you have rule-level properties that you would like to reference many times in your alert. For example:
 
@@ -302,8 +240,7 @@ Example usage using new-style format::
     alerta_attributes_values: ["{key}",    "{logdate}",     "{sender_ip}"  ]
     alerta_text:  "Probe {hostname} is UP at {logdate} GMT"
 
-Alertmanager
-~~~~~~~~~~~~
+## Alertmanager
 
 This alert type will send alerts to Alertmanager postAlerts. ``alert_subject`` and ``alert_text`` are passed as the annotations labeled ``summary`` and ``description`` accordingly. The labels can be changed.
 See https://prometheus.io/docs/alerting/clients/ for more details about the Alertmanager alert format.
@@ -398,8 +335,7 @@ For example::
     - uri
     - num_matches
 
-AWS SES (Amazon Simple Email Service)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## AWS SES (Amazon Simple Email Service)
 
 The AWS SES alerter is similar to Email alerter but uses AWS SES to send emails. The AWS SES alerter can use AWS credentials
 from the rule yaml, standard AWS config files or environment variables.
@@ -493,8 +429,7 @@ Example When to use aws_profile usage::
     ses_from_addr: "xxxx1@xxx.com"
     ses_email: "xxxx1@xxx.com"
 
-AWS SNS (Amazon Simple Notification Service)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## AWS SNS (Amazon Simple Notification Service)
 
 The AWS SNS alerter will send an AWS SNS notification. The body of the notification is formatted the same as with other alerters.
 The AWS SNS alerter uses boto3 and can use credentials in the rule yaml, in a standard AWS credential and config files, or
@@ -543,8 +478,7 @@ Example When to use aws_profile usage::
     sns_topic_arn: 'arn:aws:sns:us-east-1:123456789:somesnstopic'
     sns_aws_profile: 'default'
 
-Chatwork
-~~~~~~~~
+## Chatwork
 
 Chatwork will send notification to a Chatwork application. The body of the notification is formatted the same as with other alerters.
 
@@ -567,8 +501,7 @@ Example usage::
     chatwork_apikey: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
     chatwork_room_id: "xxxxxxxxx"
 
-Command
-~~~~~~~
+## Command
 
 The command alert allows you to execute an arbitrary command and pass arguments or stdin from the match. Arguments to the command can use
 Python format string syntax to access parts of the match. The alerter will open a subprocess and optionally pass the match, or matches
@@ -612,8 +545,7 @@ Example usage using new-style format::
       - command
     command: ["/bin/send_alert", "--username", "{match[username]}"]
 
-Datadog
-~~~~~~~
+## Datadog
 
 This alert will create a `Datadog Event`_. Events are limited to 4000 characters. If an event is sent that contains
 a message that is longer than 4000 characters, only his first 4000 characters will be displayed.
@@ -635,13 +567,11 @@ Example usage::
 .. _`Datadog API key`: https://docs.datadoghq.com/account_management/api-app-keys/#api-keys
 .. _`Datadog application key`: https://docs.datadoghq.com/account_management/api-app-keys/#application-keys
 
-Debug
-~~~~~
+## Debug
 
 The debug alerter will log the alert information using the Python logger at the info level. It is logged into a Python Logger object with the name ``elastalert`` that can be easily accessed using the ``getLogger`` command.
 
-Dingtalk
-~~~~~~~~
+## Dingtalk
 
 Dingtalk will send notification to a Dingtalk application. The body of the notification is formatted the same as with other alerters.
 
@@ -710,8 +640,7 @@ Optional:
 
 ``dingtalk_sign``: DingTalk HMAC secret, used for message authentication. See https://open.dingtalk.com/document/robots/customize-robot-security-settings for more information. Note that the algorithm provides authentication that *some* message was recently sent (within an hour) but does not authenticate the integrity of the current message itself. 
 
-Discord
-~~~~~~~
+## Discord
 
 Discord will send notification to a Discord application. The body of the notification is formatted the same as with other alerters.
 
@@ -876,8 +805,7 @@ Example usage::
     exotel_to_number: "Exotel to number"
     exotel_from_number: "Exotel from number"
 
-Gitter
-~~~~~~
+## Gitter
 
 Gitter alerter will send a notification to a predefined Gitter channel. The body of the notification is formatted the same as with other alerters.
 
@@ -899,8 +827,7 @@ Example usage::
     gitter_webhook_url: "Your Gitter Webhook URL"
     gitter_msg_level: "error"
 
-GoogleChat
-~~~~~~~~~~
+## GoogleChat
 GoogleChat alerter will send a notification to a predefined GoogleChat channel. The body of the notification is formatted the same as with other alerters.
 
 The alerter requires the following options:
@@ -921,8 +848,7 @@ Optional:
 
 ``googlechat_proxy``: By default ElastAlert 2 will not use a network proxy to send notifications to GoogleChat. Set this option using ``hostname:port`` if you need to use a proxy. only supports https.
 
-Graylog GELF
-~~~~~~~~~~~~
+## Graylog GELF
 GELF alerter will send a custom message to a Graylog GELF input (HTTP/TCP). Alert payload content you form with key-value pairs.
 
 The alerter requires the following options:
@@ -963,13 +889,11 @@ Optional:
 
 ``gelf_timeout``: Custom timeout.
 
-Grafana OnCall
-~~~~~~~~~~~~~~
+## Grafana OnCall
 
 https://grafana.com/docs/oncall/latest/integrations/elastalert/
 
-HTTP POST
-~~~~~~~~~
+## HTTP POST
 
 This alert type will send results to a JSON endpoint using HTTP POST. The key names are configurable so this is compatible with almost any endpoint. By default, the JSON will contain all the items from the match, unless you specify http_post_payload, in which case it will only contain those items.
 
@@ -1006,8 +930,7 @@ Example usage::
     http_post_headers:
       authorization: Basic 123dr3234
 
-HTTP POST 2
-~~~~~~~~~~~
+## HTTP POST 2
 
 This alert type will send results to a JSON endpoint using HTTP POST. The key names are configurable so this is compatible with almost any endpoint. By default, the JSON will contain all the items from the match, unless you specify http_post_payload, in which case it will only contain those items.
 This alert is a more flexible version of the HTTP Post alerter.
@@ -1094,8 +1017,7 @@ Example usage with json string formatting::
         "X-custom-{{key}}": "{{type}}"
       }
 
-Indexer
-~~~~~~~
+## Indexer
 
 Description: Creates a record in an arbitrary index within an Elasticsearch or OpenSearch index.
 
@@ -1177,8 +1099,7 @@ Example 2 usage::
         - name: description
           value: General description.
 
-IRIS
-~~~~
+## IRIS
 The Iris alerter can be used to create a new alert or case in `Iris IRP System <https://dfir-iris.org>`_. The alerter supports adding tags, IOCs, and context from the alert matches and rule data.
 
 The alerter requires the following option:
@@ -1258,8 +1179,7 @@ A few words about ``ioc_tlp_id`` and ``ioc_type_id``. ``ioc_tlp_id`` can be of t
 
 You can find complete examples of rules in the repository under the 'examples' folder.
 
-Jira
-~~~~
+## Jira
 
 The Jira alerter will open a ticket on Jira whenever an alert is triggered. You must have a service account for ElastAlert 2 to connect with.
 The credentials of the service account are loaded from a separate file. Credentials can either be username and password or the Personal Access Token.
@@ -1396,8 +1316,7 @@ Example usage::
       - My Custom Value 1
       - My Custom Value 2
 
-Lark
-~~~~~~~~
+## Lark
 
 Lark alerter will send notification to a predefined bot in Lark application. The body of the notification is formatted the same as with other alerters.
 
@@ -1416,8 +1335,7 @@ Example usage::
     lark_bot_id: "your lark bot id"
     lark_msgtype: "text"
 
-Matrix Hookshot
-~~~~~~~~~~~~~~~
+## Matrix Hookshot
 
 The Matrix Hookshot alerter will send a notification to a Hookshot server that's already setup within the Matrix server. The body of the notification is formatted the same as with other alerters.
 
@@ -1443,8 +1361,7 @@ Optional:
 
 ``matrixhookshot_ca_certs``: Set this option to ``True`` or a path to a CA cert bundle or directory (eg: ``/etc/ssl/certs/ca-certificates.crt``) to validate the SSL certificate.
 
-Mattermost
-~~~~~~~~~~
+## Mattermost
 
 Mattermost alerter will send a notification to a predefined Mattermost channel. The body of the notification is formatted the same as with other alerters.
 
@@ -1559,8 +1476,7 @@ Example mattermost_attach_opensearch_discover_url, mattermost_kibana_discover_co
     mattermost_opensearch_discover_title: "Discover in opensearch"
 
 
-Microsoft Teams
-~~~~~~~~~~~~~~~
+## Microsoft Teams
 
 Microsoft Teams alerter will send a notification to a predefined Microsoft Teams channel.
 
@@ -1650,8 +1566,7 @@ Example usage::
     ms_teams_theme_color: "#6600ff"
     ms_teams_webhook_url: "MS Teams Webhook URL"
 
-Microsoft Power Automate
-~~~~~~~~~~~~~~~~~~~~~~~~
+## Microsoft Power Automate
 
 Microsoft Power Automate alerter will send a notification to a predefined Microsoft Teams channel.
 
@@ -1758,8 +1673,7 @@ Example usage::
   ms_power_automate_webhook_url: >-
     webhook 
 
-OpsGenie
-~~~~~~~~
+## OpsGenie
 
 OpsGenie alerter will create an alert which can be used to notify Operations people of issues or log information. An OpsGenie ``API``
 integration must be created in order to acquire the necessary ``opsgenie_key`` rule variable. Currently the OpsGenieAlerter only creates
@@ -1838,8 +1752,7 @@ Example opsgenie_details with kibana_discover_url::
       Message: { field: message }
       Testing: 'yes'
 
-PagerDuty
-~~~~~~~~~
+## PagerDuty
 
 PagerDuty alerter will trigger an incident to a predefined PagerDuty service. The body of the notification is formatted the same as with other alerters.
 
@@ -1898,8 +1811,7 @@ See https://developer.pagerduty.com/api-reference/b3A6Mjc0ODI2Nw-send-an-event-t
 
 ``pagerduty_v2_payload_include_all_info``: If True, this will include the entire Elasticsearch document as a custom detail field called "information" in the PagerDuty alert.
 
-PagerTree
-~~~~~~~~~
+## PagerTree
 
 PagerTree alerter will trigger an incident to a predefined PagerTree integration url.
 
@@ -1915,8 +1827,7 @@ Example usage::
       - "pagertree"
     pagertree_integration_url: "PagerTree Integration URL"
 
-Rocket.Chat
-~~~~~~~~~~~
+## Rocket.Chat
 
 Rocket.Chat alerter will send a notification to a predefined channel. The body of the notification is formatted the same as with other alerters.
 https://developer.rocket.chat/api/rest-api/methods/chat/postmessage
@@ -2015,8 +1926,7 @@ Example rocket_chat_alert_fields::
         value: beat.name
         short: true
 
-Squadcast
-~~~~~~~~~
+## Squadcast
 
 Alerts can be sent to Squadcast using the `http post` method described above and Squadcast will process it and send Phone, SMS, Email and Push notifications to the relevant person(s) and let them take actions.
 
@@ -2030,8 +1940,7 @@ Configuration variables in rules YAML file::
 
 For more details, you can refer the `Squadcast documentation <https://support.squadcast.com/integrations/alert-source-integrations-native/elastalert>`_.
 
-ServiceNow
-~~~~~~~~~~
+## ServiceNow
 
 The ServiceNow alerter will create a new Incident in ServiceNow. The body of the notification is formatted the same as with other alerters.
 
@@ -2093,8 +2002,7 @@ Example usage::
         u_affected_user: 'Sample User'
         u_affected_site: 'Sample Location'
 
-Slack
-~~~~~
+## Slack
 
 Slack alerter will send a notification to a predefined Slack channel. The body of the notification is formatted the same as with other alerters.
 
@@ -2226,8 +2134,7 @@ Example slack_attach_opensearch_discover_url, slack_opensearch_discover_color, s
 ``slack_jira_ticket_title``: The title of the Jira Ticket url attachment. Defaults to ``Jira Ticket``.
 
 
-SMSEagle
-~~~~~~~~
+## SMSEagle
 
 SMSEagle alerter will send API requests to SMSEagle device and then forward it as an SMS or Call, depending on your configuration.
 
@@ -2266,8 +2173,7 @@ Example usage::
     smseagle_contacts: [2, 7]
 
 
-Splunk On-Call (Formerly VictorOps)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Splunk On-Call (Formerly VictorOps)
 
 Splunk On-Call (Formerly VictorOps) alerter will trigger an incident to a predefined Splunk On-Call (Formerly VictorOps) routing key. The body of the notification is formatted the same as with other alerters.
 
@@ -2295,8 +2201,7 @@ Example usage::
     victorops_routing_key: "VictorOps routing Key"
     victorops_message_type: "INFO"
 
-Stomp
-~~~~~
+## Stomp
 
 This alert type will use the STOMP protocol in order to push a message to a broker like ActiveMQ or RabbitMQ. The message body is a JSON string containing the alert details.
 The default values will work with a pristine ActiveMQ installation.
@@ -2327,8 +2232,7 @@ Example usage::
     stomp_password: "admin"
     stomp_destination: "/queue/ALERT"
 
-Telegram
-~~~~~~~~
+## Telegram
 Telegram alerter will send a notification to a predefined Telegram username or channel. The body of the notification is formatted the same as with other alerters.
 
 The alerter requires the following two options:
@@ -2359,8 +2263,7 @@ Example usage::
     telegram_room_id: "chat_id"
 
 
-Tencent SMS
-~~~~~~~~~~~
+## Tencent SMS
 
 Required:
 
@@ -2422,8 +2325,7 @@ this value format by `rfc6901 <https://datatracker.ietf.org/doc/html/rfc6901>`_
 
 
 
-TheHive
-~~~~~~~
+## TheHive
 
 TheHive alerter can be used to create a new alert in TheHive. The alerter supports adding tags,
 custom fields, and observables from the alert matches and rule data.
@@ -2515,8 +2417,7 @@ Example usage::
         tags: ['tag3']
       - ip: client.ip
 
-Twilio
-~~~~~~
+## Twilio
 
 The Twilio alerter will send an alert to a mobile phone as an SMS from your Twilio
 phone number. The SMS will contain the alert name. You may use either Twilio SMS
@@ -2562,8 +2463,7 @@ Example with SMS usage::
     twilio_auth_token: "abcdefghijklmnopqrstuvwxyz012345"
     twilio_account_sid: "ABCDEFGHIJKLMNOPQRSTUVWXYZ01234567"
 
-Webex Webhook
-~~~~~~~~~~~~~
+## Webex Webhook
 
 Webex Webhook alerter will send notification to a predefined incoming webhook in Webex application. The body of the notification is formatted the same as with other alerters.
 
@@ -2586,8 +2486,7 @@ Example usage::
     webex_webhook_id: "your webex incoming webhook id"
     webex_webhook: "markdown"
 
-WorkWechat
-~~~~~~~~~~
+## WorkWechat
 
 WorkWechat alerter will send notification to a predefined bot in WorkWechat application. The body of the notification is formatted the same as with other alerters.
 
@@ -2603,8 +2502,7 @@ Example usage::
     work_wechat_bot_id: "your workwechat bot id"
     work_wechat_msgtype: "text"
 
-Zabbix
-~~~~~~
+## Zabbix
 
 Zabbix will send notification to a Zabbix server. The item in the host specified receive a 1 value for each hit. For example, if the elastic query produce 3 hits in the last execution of ElastAlert 2, three '1' (integer) values will be send from elastalert to Zabbix Server. If the query have 0 hits, any value will be sent.
 
@@ -2643,8 +2541,7 @@ Example usage::
 
 where ``hostname`` is the available elasticsearch field.
 
-YZJ
-~~~~~~~
+## YZJ
 
 YZJ will send notification to a YZJ application. The body of the notification is formatted the same as with other alerters.
 
@@ -2670,8 +2567,7 @@ Example usage::
     yzj_token: "token"
 
 
-Flashduty
-~~~~~~~~~~~~~
+## Flashduty
 
 Flashduty alerter will send notification to a Flashduty application. The body of the notification formatted the same as with other alerters.
 

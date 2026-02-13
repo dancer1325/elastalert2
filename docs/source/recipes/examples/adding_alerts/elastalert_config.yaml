@@ -1,0 +1,22 @@
+# ElastAlert 2 Configuration File
+
+# Folder where rules are located
+rules_folder: rules
+
+# Scan subdirectories inside rules_folder
+scan_subdirectories: true
+
+# How often ElastAlert will query Elasticsearch
+run_every:
+  minutes: 1
+
+# Buffer time for non-real-time logs
+buffer_time:
+  minutes: 15
+
+# Elasticsearch configuration for metadata
+es_host: localhost
+es_port: 9200
+
+# Index where ElastAlert2 saves alert metadata
+writeback_index: elastalert_status

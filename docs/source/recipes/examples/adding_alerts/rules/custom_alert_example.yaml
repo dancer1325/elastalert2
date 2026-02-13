@@ -1,0 +1,36 @@
+# Example Rule with Custom Alerter
+
+# (Required) Unique rule name
+name: "Custom Alert Example"
+
+# (Required) Rule type
+# 'any' = alert on any match
+type: any
+
+# (Required) Index to monitor (supports wildcards)
+index: logstash-*
+
+# (Required) Filters for matching
+# These filters are combined with AND
+filter:
+  - term:
+      level: "error"
+
+# (Optional) Timestamp field
+timestamp_field: "@timestamp"
+
+# (Required) Custom alerter
+alert: "elastalert_modules.my_alerts.AwesomeNewAlerter"
+
+# (Required) Alerter-specific parameters
+output_file_path: "/tmp/elastalert_custom_alerts.log"
+
+# (Optional) Custom alert text
+alert_text: |
+  Critical event detected!
+  Rule: {0}
+  Timestamp: {1}
+
+alert_text_args:
+  - name
+  - "@timestamp"

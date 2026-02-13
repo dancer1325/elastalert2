@@ -27,7 +27,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/config.yaml") . | sha256sum }}
+        checksum/config: {{ include (print $.Template.BasePath "/elastalert_config.yaml") . | sha256sum }}
         checksum/rules: {{ include (print $.Template.BasePath "/rules.yaml") . | sha256sum }}
 {{- if .Values.metrics.enabled  }}
 {{ toYaml .Values.metrics.prometheusScrapeAnnotations | indent 8 }}
@@ -90,8 +90,8 @@ spec:
 
         volumeMounts:
           - name: config
-            mountPath: '/opt/elastalert/config.yaml'
-            subPath: config.yaml
+            mountPath: '/opt/elastalert/elastalert_config.yaml'
+            subPath: elastalert_config.yaml
           - name: {{ .Values.rulesVolumeName }}
             mountPath: {{ .Values.rulesFolder }}
 {{- if .Values.elasticsearch.certsVolumeMounts }}
@@ -173,7 +173,7 @@ spec:
 {{- end }}
             items:
             - key: elastalert_config
-              path: config.yaml
+              path: elastalert_config.yaml
 {{- if .Values.elasticsearch.certsVolumes }}
 {{ toYaml .Values.elasticsearch.certsVolumes | indent 8 }}
 {{- end }}

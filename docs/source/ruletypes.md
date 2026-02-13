@@ -973,95 +973,48 @@ Example value : query_timezone: "Europe/Istanbul"
 
 .. _testing :
 
-Testing Your Rule
-=================
+# how to test your rule?
 
-Once you've written a rule configuration, you will want to validate it. To do so, you can either run ElastAlert 2 in debug mode,
-or use ``elastalert-test-rule``, which is a script that makes various aspects of testing easier.
+* ways
+  * `elastalert ... --debug`
+  * use `elastalert-test-rule`
 
-It can:
-
-- Check that the configuration file loaded successfully.
-
-- Check that the Elasticsearch filter parses.
-
-- Run against the last X day(s) and the show the number of hits that match your filter.
-
-- Show the available terms in one of the results.
-
-- Save documents returned to a JSON file.
-
-- Run ElastAlert 2 using either a JSON file or actual results from Elasticsearch.
-
-- Print out debug alerts or trigger real alerts.
-
-- Check that, if they exist, the primary_key, compare_key and include terms are in the results.
-
-- Show what metadata documents would be written to ``elastalert_status``.
-
-Without any optional arguments, it will run ElastAlert 2 over the last 24 hours and print out any alerts that would have occurred.
-Here is an example test run which triggered an alert:
-
-.. code-block:: console
-
-    $ elastalert-test-rule my_rules/rule1.yaml
-    Successfully Loaded Example rule1
-
-    Got 105 hits from the last 1 day
-
-    Available terms in first hit:
-        @timestamp
-        field1
-        field2
-        ...
-    Included term this_field_doesnt_exist may be missing or null
-
-    INFO:root:Queried rule Example rule1 from 6-16 15:21 PDT to 6-17 15:21 PDT: 105 hits
-    INFO:root:Alert for Example rule1 at 2015-06-16T23:53:12Z:
-    INFO:root:Example rule1
-
-    At least 50 events occurred between 6-16 18:30 PDT and 6-16 20:30 PDT
-
-    field1:
-    value1: 25
-    value2: 25
-
-    @timestamp: 2015-06-16T20:30:04-07:00
-    field1: value1
-    field2: something
+## `elastalert ... --debug`
 
 
-    Would have written the following documents to elastalert_status:
+## `elastalert-test-rule`
+* == script /
+  * allows
+    * checking that
+      * configuration file loaded successfully
+      * Elasticsearch filter parses
+      * if the primary_key & compare_key exist -> included | terms
+    * running against the last X day(s) / 
+      * show the hits / match your filter
+    * show
+      * the available terms (== ES's fields / match with your rule)
+      * the metadata documents / would be written | "elastalert_status" 
+    * saving documents -- as a -- JSON file
+    * running ElastAlert 2 -- via -- JSON file OR Elasticsearch's actual results
+    * printing out debug alerts OR trigger real alerts
+* by default, run ElastAlert 2 | last 24 hours
 
-    silence - {'rule_name': 'Example rule1', '@timestamp': datetime.datetime( ... ), 'exponent': 0, 'until':
-    datetime.datetime( ... )}
+### | Docker
 
-    elastalert_status - {'hits': 105, 'matches': 1, '@timestamp': datetime.datetime( ... ), 'rule_name': 'Example rule1',
-    'starttime': datetime.datetime( ... ), 'endtime': datetime.datetime( ... ), 'time_taken': 3.1415926}
+```bash
+$ docker run --rm -it --net es_default \
+    -v $(pwd)/elastalert.yaml:/opt/elastalert/config.yaml \
+    -v $(pwd)/rules:/opt/elastalert/rules \
+    --entrypoint elastalert-test-rule \
+    jertel/elastalert2 \
+    /opt/elastalert/rules/example_frequency.yaml
+```
 
-Note that Docker users can also run the test tool:
 
-.. code-block:: console
 
-    $ docker run --rm -it --net es_default \
-        -v $(pwd)/elastalert.yaml:/opt/elastalert/config.yaml \
-        -v $(pwd)/rules:/opt/elastalert/rules \
-        --entrypoint elastalert-test-rule \
-        jertel/elastalert2 \
-        /opt/elastalert/rules/example_frequency.yaml
-
-If you want to specify an alternate configuration file to use, you can add the config flag prior to the rule filename::
-
-    --config <path-to-config-file> 
-
-The configuration preferences will be loaded as follows:
-    1. Configurations specified in the yaml file.
-    2. Configurations specified in the config file, if specified.
-    3. Default configurations, for the tool to run.
-
-Note that everything between "Alert for Example rule1 at ..." and "Would have written the following ..." is the exact text body that an alert would have.
-See the section below on alert content for more details.
-Also note that datetime objects are converted to ISO8601 timestamps when uploaded to Elasticsearch. See :ref:`the section on metadata <metadata>` for more details.
+     
+Also note that datetime objects are converted to ISO8601 timestamps when uploaded to Elasticsearch
+* See :ref:`the section on metadata <metadata>` for more details.
 
 Other options include:
 
@@ -1099,8 +1052,7 @@ guaranteed to have the exact same results as with Elasticsearch. For example, an
 
    Also, EQL filters do not support counts, so the output relating to counts may show N/A (Not Applicable).
 
-Rule Types
-==========
+# Rule Types
 
 * `RuleType` classes / 
   * defined | [elastalert/ruletypes.py](/elastalert/ruletypes.py)

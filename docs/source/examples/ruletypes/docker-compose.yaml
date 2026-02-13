@@ -1,0 +1,64 @@
+services:
+  # Elasticsearch service for testing
+  elasticsearch:
+    image: elasticsearch:8.12.0
+    container_name: elasticsearch_test
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    networks:
+      - elastalert_test
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+
+  # Kibana (OPTIONAL)
+  kibana:
+    image: kibana:8.12.0
+    container_name: kibana_test
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    networks:
+      - elastalert_test
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+
+  # ElastAlert2 test-rule service
+  elastalert_test:
+    image: jertel/elastalert2:latest
+    container_name: elastalert_test
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - elastalert_test
+    volumes:
+      - ./elastalert_config.yaml:/opt/elastalert/config.yaml:ro
+      - ./rules:/opt/elastalert/rules:ro
+    entrypoint: /bin/sh
+    command: >
+      -c "
+        echo '========================================';
+        echo 'Running elastalert-test-rule...';
+        echo '========================================';
+        elastalert-test-rule --config /opt/elastalert/config.yaml --days 7 /opt/elastalert/rules/rule1.yaml;
+        # elastalert-test-rule --alert --config /opt/elastalert/config.yaml /opt/elastalert/rules/rule1.yaml;
+        # elastalert-test-rule --schema-only /opt/elastalert/rules/rule1.yaml;
+        # elastalert-test-rule --count-only --config /opt/elastalert/config.yaml /opt/elastalert/rules/rule1.yaml;
+        echo '';
+        echo '========================================';
+        echo 'Test completed!';
+        echo '========================================';
+      "
+
+networks:
+  elastalert_test:
+    driver: bridge

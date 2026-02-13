@@ -1,0 +1,57 @@
+services:
+  # Elasticsearch service for testing
+  elasticsearch:
+    image: elasticsearch:8.12.0
+    container_name: elasticsearch_test
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    networks:
+      - elastalert_test
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+
+  # Kibana (OPTIONAL)
+  kibana:
+    image: kibana:8.12.0
+    container_name: kibana_test
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    networks:
+      - elastalert_test
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+
+  # ElastAlert2 service (normal mode)
+  elastalert_test:
+    image: jertel/elastalert2:latest
+    container_name: elastalert_test
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - elastalert_test
+    volumes:
+      - ./elastalert_config.yaml:/opt/elastalert/config.yaml:ro
+      - ./rules:/opt/elastalert/rules:ro
+    restart: unless-stopped
+    # Use default entrypoint from Dockerfile (/opt/elastalert/run.sh)
+    # which runs: elastalert-create-index && elastalert
+    # Command options (passed to elastalert):
+    # - No command: runs normally (silent mode)
+    # - --verbose: shows detailed logs
+    # - --debug: debug mode (prints alerts, doesn't send them)
+    command: --verbose
+
+networks:
+  elastalert_test:
+    driver: bridge

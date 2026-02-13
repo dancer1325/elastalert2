@@ -1,15 +1,20 @@
 * "config.yaml"
-  * == 👀global configuration file👀/
-    * defines ElastAlert2's operation setup
+  * == 👀ElastAlert2's global configuration setup👀
 
-``buffer_time``: ElastAlert 2 will continuously query against a window from the present to ``buffer_time`` ago.
-This way, logs can be back filled up to a certain extent and ElastAlert 2 will still process the events. This
-may be overridden by individual rules. This option is ignored for rules where ``use_count_query`` or ``use_terms_query``
-is set to true. Note that back filled data may not always trigger count based alerts as if it was queried in real time.
+* `buffer_time`
+  * global CONTINUOUS query against a window: [present - buffer_time, present]
+    * CONTINUOUS
+      * _Example:_
+        * execution1: [14:45, 15:00]
+        * execution2: [14:46, 15:01]
+        * ...
+    * Reason: delay | index documents | ES
+    * can be overridden / EACH rule
+    * | rules / `use_count_query: true` OR `use_terms_query: true` -> this option is ignored
 
 * `es_host`
   * == 
-    * Elasticsearch cluster's host name | ElastAlert 2 records searches' metadata
+    * Elasticsearch cluster's host name | ElastAlert2 records searches' metadata
     * default cluster | EACH rule to run on 
   * uses
     * | start ElastAlert2, 
@@ -84,16 +89,22 @@ is set to true. Note that back filled data may not always trigger count based al
       * requirements
         * ⚠️use ``FileRulesLoader``⚠️
 
-``scan_subdirectories``: Optional; Sets whether or not ElastAlert 2 should recursively descend the rules directory - ``true`` or ``false``. The default is ``true``
+* `scan_subdirectories`
+  * OPTIONAL
+  * == boolean / 
+    * whether OR not ElastAlert 2 should recursively descend the `rules_folder` value
+  * by default, `true`
 
-``run_every``: How often ElastAlert 2 should query Elasticsearch. ElastAlert 2 will remember the last time
-it ran the query for a given rule, and periodically query from that time until the present. The format of
-this field is a nested unit of time, such as ``minutes: 5``. This is how time is defined in every ElastAlert 2
-configuration.
+* `run_every`
+  * == global frequency run / rule
+    * can be customized / EACH rule specification
+    * ElastAlert2 write | ES's index `writeback_index`
+  * == object / ["time" formats](ruletypes.md)
 
 ``misfire_grace_time``: If the rule scheduler is running behind, due to large numbers of rules or long-running rules, this grace time settings allows a rule to still be executed, provided its next scheduled runt time is no more than this grace period, in seconds, overdue. The default is 5 seconds.
 
-``writeback_index``: The index on ``es_host`` to use.
+* `writeback_index`
+  * `es_host`'s index -- to -- use
 
 ``max_query_size``: The maximum number of documents that will be downloaded from Elasticsearch in a single query. The
 default is 10,000, and if you expect to get near this number, consider using ``use_count_query`` for the rule. If this

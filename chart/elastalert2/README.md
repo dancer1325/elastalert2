@@ -1,30 +1,15 @@
-# ElastAlert 2 Helm Chart for Kubernetes
+# ElastAlert 2 Helm Chart
 
-An ElastAlert 2 helm chart is available, and can be installed into an existing Kubernetes cluster by following the
-instructions below.
+* follow the Bitnami pattern (serviceMonitor + prometheusRules + ...)
+  * _Example:_ [Thanos helm chart](https://github.com/bitnami/charts/tree/master/bitnami/thanos/templates) 
 
-Inspiration for optional serviceMonitor and prometheusRules objects, along with source code for calculating and
-implementing labels on the chart, ported from  https://github.com/bitnami/charts/tree/master/bitnami/thanos/templates
+## how to install the Chart?
 
-## Installing the Chart
+* `helm repo add elastalert2 https://jertel.github.io/elastalert2/`
+* `helm install elastalert2 elastalert2/elastalert2`
+  * [configuration](#configuration)
 
-Add the elastalert2 repository to your Helm configuration:
-
-```console
-helm repo add elastalert2 https://jertel.github.io/elastalert2/
-```
-
-Next, install the chart with a release name, such as _elastalert2_:
-
-```console
-helm install elastalert2 elastalert2/elastalert2
-```
-
-The command deploys ElastAlert 2 on the Kubernetes cluster in the default configuration.
-The [configuration](#configuration) section lists the parameters that can be configured during installation.
-
-See the comment in the default `values.yaml` for specifying a `writebackIndex` for ES 5.x.
-
+* TODO: 
 If necessary, open Dev Tools on Kibana and send the below request to avoid errors
 like `RequestError: TransportError(400, u'search_phase_execution_exception', u'No mapping found for [alert_time] in order to sort on')`
 
@@ -37,13 +22,9 @@ PUT /elastalert/_mapping/elastalert
 }
 ```
 
-## Uninstalling the Chart
+## how to uninstall?
 
-To uninstall/delete the ElastAlert 2 deployment:
-
-```console
-helm delete elastalert2 --purge
-```
+* `helm delete elastalert2 --purge`
 
 The command removes all the Kubernetes components associated with the chart and deletes the release.
 
@@ -123,3 +104,6 @@ The command removes all the Kubernetes components associated with the chart and 
 | `metrics.prometheusRule.namespace`           | Override the namespace for Prometheus pod. Take precedence on namespaceOverride value.                                                                                                                                                                                         | `false`                                                  |
 | `metrics.prometheusRule.additionalLabels`    | Labels to add to the prometheusRule object for prometheus-operator to detect it, when deployed on a namespace different from the one where prometheus-operator is running.                                                                                                     | `{}`                                                     |
 | `metrics.prometheusRule.rules`               | Group of alerting and/or recording rules to add to the prometheus configuration, example Alerting rules for pod down, or for file descriptors. Should be added as multiline Yaml string.                                                                                       | ``                                                       |
+
+* default 
+  * == [values.yaml](values.yaml)

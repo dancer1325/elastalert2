@@ -2,13 +2,15 @@ ElastAlert 2 Metadata Index
 ===========================
 
 * ElastAlert 2 
-  * store its state | Elasticsearch
+  * 👀store (queries' information & metadata) + (its alerts' information & metadata) | ES👀
     * allows
       * auditing ElastAlert 2's operation
       * debugging ElastAlert 2's operation
       * | ElastAlert 2 shuts down, restarts, or crashes, avoid
         * loss of data
         * duplication of alerts
+    * highly recommended
+      * ❌BUT NOT required to run ElastAlert2❌
   * 's gloabl config files 
     * are
       * "es_host"

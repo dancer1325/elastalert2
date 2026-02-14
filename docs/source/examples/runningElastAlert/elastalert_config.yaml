@@ -1,0 +1,33 @@
+# ElastAlert2 Configuration for Testing
+
+# Elasticsearch connection
+es_host: localhost     # because BOTH run -- as -- Docker containers
+es_port: 9200
+
+# No authentication required for testing
+# es_username: ""
+# es_password: ""
+
+# Optional: Elasticsearch URL prefix
+# es_url_prefix: ""
+
+# How often ElastAlert should query Elasticsearch
+run_every:
+  minutes: 1
+
+# Buffer time to query before the current time
+buffer_time:
+  minutes: 15
+
+# The index where ElastAlert will store its metadata
+writeback_index: elastalert_status
+
+# The index where alerts will be sent (for Indexer alerter)
+# alert_index: elastalert_alerts
+
+# Alert time limit - don't send alert if older than this
+alert_time_limit:
+  days: 2
+
+# Rules folder (not used in testing, but required)
+rules_folder: /opt/elastalert/rules

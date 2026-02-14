@@ -60,9 +60,15 @@
 
 ``ca_certs``: Optional; path to a CA cert bundle to use to verify SSL connections
 
-``es_username``: Optional; basic-auth username for connecting to ``es_host``. The environment variable ``ES_USERNAME`` will override this field.
+* `es_username`
+  * OPTIONAL
+  * basic-auth username -- for connecting to -- `es_host`
+  * override -- by -- `ES_USERNAME` environment variable
 
-``es_password``: Optional; basic-auth password for connecting to ``es_host``. The environment variable ``ES_PASSWORD`` will override this field.
+* `es_password`
+  * OPTIONAL
+  * basic-auth password -- for connecting to -- `es_host` 
+  * override -- by -- `ES_PASSWORD` environment variable
 
 ``es_bearer``: Optional; Bearer token for connecting to ``es_host``. The environment variable ``ES_BEARER`` will override this field. This authentication option will override the password authentication option.
 
@@ -183,8 +189,12 @@ unless overwritten in the rule config. The default is "localhost".
 
 ``email_reply_to``: This sets the Reply-To header in emails. The default is the recipient address.
 
-``aws_region``: This makes ElastAlert 2 to sign HTTP requests when using Amazon OpenSearch Service. It'll use instance role keys to sign the requests.
-The environment variable ``AWS_DEFAULT_REGION`` will override this field.
+* `aws_region`
+  * allows
+    * signing HTTP requests -- via -- instance role keys 
+  * uses
+    * Amazon OpenSearch Service
+  * override -- by -- environment variable `AWS_DEFAULT_REGION` environment variable
 
 ``profile``: AWS profile to use when signing requests to Amazon OpenSearch Service, if you don't want to use the instance role keys.
 The environment variable ``AWS_DEFAULT_PROFILE`` will override this field.

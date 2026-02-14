@@ -1,0 +1,54 @@
+# Example ElastAlert2 Rule - Detect ERROR level logs
+
+# Rule name (required)
+name: "Example rule1 - Detect ERROR logs"
+
+# Rule type (required)
+# 'any' will match every document that meets the filter criteria
+type: any
+
+# Index to search (required)
+index: logs-test
+
+# Filter to match documents
+# This will match all documents with level: "ERROR"
+# Note: Use .keyword for exact matches on text fields
+filter:
+  - term:
+      level.keyword: "ERROR"
+
+# Alert configuration
+alert:
+  - debug
+
+# Alert subject customization
+alert_subject: "ElastAlert: {0} ERROR log detected"
+alert_subject_args:
+  - message
+
+# Alert text customization
+alert_text_type: alert_text_only
+alert_text: |
+  An ERROR log was detected:
+
+  Timestamp: {0}
+  Service: {1}
+  User: {2}
+  Host: {3}
+  Message: {4}
+
+alert_text_args:
+  - "@timestamp"
+  - service
+  - user
+  - host
+  - message
+
+# Optional: Include these fields in the alert
+include:
+  - "@timestamp"
+  - level
+  - message
+  - service
+  - user
+  - host

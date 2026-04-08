@@ -9,8 +9,8 @@
       * seconds
     * _Example:_  `minutes: 15` OR `hours: 1`
 
-Rule Configuration Cheat Sheet
-==============================
+# Rule Configuration Cheat Sheet
+
 
 | Parameter | Type | Status | Default |
 |-----------|------|--------|---------|
@@ -143,8 +143,7 @@ Rule Configuration Cheat Sheet
 | `min_denominator` (int, default 0) | | | | | | | | | | | | Opt |
 
 
-Common Configuration Options
-============================
+# Common Configuration Options
 
 Every file that ends in ``.yaml`` in the ``rules_folder`` will be run by default.
 The following configuration settings are common to all types of rules.
@@ -154,24 +153,23 @@ The following configuration settings are common to all types of rules.
   While the following are marked as *required*, if they are already defined in the global configuration 
   then those settings will be utilized. If desired, each rule can override the global settings.
 
-Required Settings
-~~~~~~~~~~~~~~~~~
+## Required Settings
 
-es_host
-^^^^^^^
+### es_host
+
 
 ``es_host``: The hostname of the Elasticsearch cluster the rule will use to query. (Required, string, no default)
 The environment variable ``ES_HOST`` will override this field.
 For multiple host Elasticsearch clusters see ``es_hosts`` parameter.
 
-es_port
-^^^^^^^
+### es_port
+
 
 ``es_port``: The port of the Elasticsearch cluster. (Required, number, no default)
 The environment variable ``ES_PORT`` will override this field.
 
-index
-^^^^^
+### index
+
 
 ``index``: The name of the index that will be searched. Wildcards can be used here, such as:
 ``index: my-index-*`` which will match ``my-index-2014-10-05``. You can also use a format string containing
@@ -181,34 +179,33 @@ For example, Separate multiple indices with commas.::
 
     index: topbeat-*,packetbeat-*
 
-name
-^^^^
+### name
+
 
 ``name``: The name of the rule. This must be unique across all rules. The name will be used in
 alerts and used as a key when writing and reading search metadata back from Elasticsearch. (Required, string, no default)
 
-type
-^^^^
+### type
+
 
 ``type``: The ``RuleType`` to use. This may either be one of the built in rule types, see :ref:`Rule Types <ruletypes>` section below for more information,
 or loaded from a module. For loading from a module, the type should be specified as ``module.file.RuleName``. (Required, string, no default)
 
-alert
-^^^^^
+### alert
+
 
 ``alert``: The ``Alerter`` type to use. This may be one or more of the built in alerts, see :ref:`Alert Types <alert_types>` section below for more information,
 or loaded from a module. For loading from a module, the alert should be specified as ``module.file.AlertName``. (Required, string or list, no default)
 
-Optional Settings
-~~~~~~~~~~~~~~~~~
-es_hosts
-^^^^^^^^
+## Optional Settings
+### es_hosts
+
 
 ``es_hosts``: The list of nodes of the Elasticsearch cluster that the rule will use for the request. (Optional, list, default none). Values can be specified as ``host:port`` if overriding the default port.
 The environment variable ``ES_HOSTS`` will override this field, and can be specified as a comma-separated value. Note that the ``es_host`` parameter must still be specified in order to identify a primary Elasticsearch host. 
 
-import
-^^^^^^
+### import
+
 
 ``import``: If specified includes all the settings from this yaml file. This allows common config options to be shared. Note that imported files that aren't
 complete rules should not have a ``.yml`` or ``.yaml`` suffix so that ElastAlert 2 doesn't treat them as rules. Filters in imported files are merged (ANDed)
@@ -216,93 +213,93 @@ with any filters in the rule. You can have one import per rule (value is string)
 The imported file can import another file or multiple files, recursively.
 The filename can be an absolute path or relative to the rules directory. (Optional, string or array of strings, no default)
 
-use_ssl
-^^^^^^^
+### use_ssl
+
 
 ``use_ssl``: Whether or not to connect to ``es_host`` using TLS. (Optional, boolean, default False)
 The environment variable ``ES_USE_SSL`` will override this field.
 
-ssl_show_warn
-^^^^^^^^^^^^^
+### ssl_show_warn
+
 
 ``ssl_show_warn``: Whether or not to show SSL/TLS warnings when ``verify_certs`` is disabled. (Optional, boolean, default True)
 
-verify_certs
-^^^^^^^^^^^^
+### verify_certs
+
 
 ``verify_certs``: Whether or not to verify TLS certificates. (Optional, boolean, default True)
 
-client_cert
-^^^^^^^^^^^
+### client_cert
+
 
 ``client_cert``: Path to a PEM certificate to use as the client certificate (Optional, string, no default)
 
-client_key
-^^^^^^^^^^^
+### client_key
+
 
 ``client_key``: Path to a private key file to use as the client key (Optional, string, no default)
 
-ca_certs
-^^^^^^^^
+### ca_certs
+
 
 ``ca_certs``: Path to a CA cert bundle to use to verify SSL connections (Optional, string, no default)
 
 
-disable_rules_on_error
-^^^^^^^^^^^^^^^^^^^^^^
+### disable_rules_on_error
+
 
 ``disable_rules_on_error``: If true, ElastAlert 2 will disable rules which throw uncaught (not EAException) exceptions. It
 will upload a traceback message to ``elastalert_metadata`` and if ``notify_email`` is set, send an email notification. The
 rule will no longer be run until either ElastAlert 2 restarts or the rule file has been modified. This defaults to ``True``.
 
-es_conn_timeout
-^^^^^^^^^^^^^^^
+### es_conn_timeout
+
 
 ``es_conn_timeout``: Optional; sets timeout for connecting to and reading from ``es_host``; defaults to ``20``.
 
-es_username
-^^^^^^^^^^^
+### es_username
+
 
 ``es_username``: basic-auth username for connecting to ``es_host``. (Optional, string, no default) The environment variable ``ES_USERNAME`` will override this field.
 
-es_password
-^^^^^^^^^^^
+### es_password
+
 
 ``es_password``: basic-auth password for connecting to ``es_host``. (Optional, string, no default) The environment variable ``ES_PASSWORD`` will override this field.
 
-es_bearer
-^^^^^^^^^^^
+### es_bearer
+
 
 ``es_bearer``: bearer-token authorization for connecting to ``es_host``. (Optional, string, no default) The environment variable ``ES_BEARER`` will override this field. This authentication option will override the password authentication option.
 
-es_api_key
-^^^^^^^^^^^
+### es_api_key
+
 
 ``es_api_key``: api-key-token authorization for connecting to ``es_host``. (Optional, base64 string, no default) The environment variable ``ES_API_KEY`` will override this field. This authentication option will override both the bearer and the password authentication options.
 
-es_url_prefix
-^^^^^^^^^^^^^
+### es_url_prefix
+
 
 ``es_url_prefix``: URL prefix for the Elasticsearch endpoint. (Optional, string, no default)
 
-statsd_instance_tag
-^^^^^^^^^^^^^^^^^^^
+### statsd_instance_tag
+
 
 ``statsd_instance_tag``: prefix for statsd metrics. (Optional, string, no default)
 
 
-statsd_host
-^^^^^^^^^^^^^
+### statsd_host
+
 
 ``statsd_host``: statsd host. (Optional, string, no default)
 
-es_send_get_body_as
-^^^^^^^^^^^^^^^^^^^
+### es_send_get_body_as
+
 
 ``es_send_get_body_as``: Method for querying Elasticsearch. (Optional, string, default "GET")
 
-use_strftime_index
-^^^^^^^^^^^^^^^^^^
+### use_strftime_index
+
 
 ``use_strftime_index``: If this is true, ElastAlert 2 will format the index using datetime.strftime for each query.
 See https://docs.python.org/2/library/datetime.html#strftime-strptime-behavior for more details.
@@ -311,15 +308,15 @@ as narrowing the number of indexes searched, compared to using a wildcard, may b
 ``logstash-%Y.%m.%d``, the query url will be similar to ``elasticsearch.example.com/logstash-2015.02.03/...`` or
 ``elasticsearch.example.com/logstash-2015.02.03,logstash-2015.02.04/...``.
 
-search_extra_index
-^^^^^^^^^^^^^^^^^^
+### search_extra_index
+
 
 ``search_extra_index``: If this is true, ElastAlert 2 will add an extra index on the early side onto each search. For example, if it's querying
 completely within 2018-06-28, it will actually use 2018-06-27,2018-06-28. This can be useful if your timestamp_field is not what's being used
 to generate the index names. If that's the case, sometimes a query would not have been using the right index.
 
-aggregation
-^^^^^^^^^^^
+### aggregation
+
 
 ``aggregation``: This option allows you to aggregate multiple matches together into one alert. Every time a match is found,
 ElastAlert 2 will wait for the ``aggregation`` period, and send all of the matches that have occurred in that time for a particular
@@ -385,8 +382,8 @@ Then, for the same sample data shown above listing alice and bob's events, Elast
    past events will result in different alerts than if ElastAlert 2 had been running while those events occured. This behavior can be changed
    by setting ``aggregate_by_match_time``.
 
-limit_execution
-^^^^^^^^^^^^^^^
+### limit_execution
+
 
 ``limit_execution``: This option allows you to activate the rule during a limited period of time. This uses the cron format.
 
@@ -394,14 +391,14 @@ For example, if you wish to activate the rule from monday to friday, between 10a
 
     limit_execution: "* 10-18 * * 1-5"
 
-aggregate_by_match_time
-^^^^^^^^^^^^^^^^^^^^^^^
+### aggregate_by_match_time
+
 
 Setting this to true will cause aggregations to be created relative to the timestamp of the first event, rather than the current time. This
 is useful for querying over historic data or if using a very large buffer_time and you want multiple aggregations to occur from a single query.
 
-aggregation_alert_time_compared_with_timestamp_field
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+### aggregation_alert_time_compared_with_timestamp_field
+
 
 ``aggregation_alert_time_compared_with_timestamp_field``: This option controls how aggregation works when a rule processes events
 older than ``current time - aggregation window`` and ``aggregate_by_match_time`` is set to true. Defaults to false.
@@ -411,8 +408,8 @@ leading to past events being notified one by one instead of being grouped togeth
 When true, it allows the aggregation of events with old timestamps, as long as they are within the aggregation window.
 (Optional, boolean, default false)
 
-realert
-^^^^^^^
+### realert
+
 
 ``realert``: This option allows you to ignore repeating alerts for a period of time. If the rule uses a ``query_key``, this option
 will be applied on a per key basis. All matches for a given rule, or for matches with the same ``query_key``, will be ignored for
@@ -421,14 +418,14 @@ This is applied to the time the alert is sent, not to the time of the event. It 
 that if ElastAlert 2 is run over a large time period which triggers many matches, only the first alert will be sent by default. If you want
 every alert, set realert to 0 minutes. (Optional, time, default 1 minute)
 
-realert_key
-^^^^^^^^^^^
+### realert_key
+
 
 ``realert_key``: This option allows you to customize the key for ``realert``.  The default is the rule name, but if you have multiple rules that
 you would like to use the same key for you can set the ``realert_key`` to be the same in those rules. (Optional, string, default is the rule name)
 
-exponential_realert
-^^^^^^^^^^^^^^^^^^^
+### exponential_realert
+
 
 ``exponential_realert``: This option causes the value of ``realert`` to exponentially increase while alerts continue to fire. If set,
 the value of ``exponential_realert`` is the maximum ``realert`` will increase to. If the time between alerts is less than twice ``realert``,
@@ -437,14 +434,14 @@ at 1:15, the next alert will not be until at least 1:35. If another alert fires 
 1 hour maximum. If more than 2 hours elapse before the next alert, ``realert`` will go back down. Note that alerts that are ignored (e.g.
 one that occurred at 1:05) would not change ``realert``. (Optional, time, no default)
 
-buffer_time
-^^^^^^^^^^^
+### buffer_time
+
 
 ``buffer_time``: This options allows the rule to override the ``buffer_time`` global setting defined in config.yaml. This value is ignored if
 ``use_count_query`` or ``use_terms_query`` is true. (Optional, time)
 
-query_delay
-^^^^^^^^^^^
+### query_delay
+
 
 ``query_delay``: This option will cause ElastAlert 2 to subtract a time delta from every query, causing the rule to run with a delay.
 This is useful if the data is Elasticsearch doesn't get indexed immediately. (Optional, time)
@@ -454,30 +451,30 @@ For example::
     query_delay:
       hours: 2
 
-owner
-^^^^^
+### owner
+
 
 ``owner``: This value will be used to identify the stakeholder of the alert. Optionally, this field can be included in any alert type. (Optional, string)
 
-priority
-^^^^^^^^
+### priority
+
 
 ``priority``: This value will be used to identify the relative priority of the alert. Optionally, this field can be included in any alert type (e.g. for use in email subject/body text). (Optional, int, default 2)
 
-category
-^^^^^^^^
+### category
+
 
 ``category``: This value will be used to identify the category of the alert. Optionally, this field can be included in any alert type (e.g. for use in email subject/body text). (Optional, string, default empty string)
 
-max_query_size
-^^^^^^^^^^^^^^
+### max_query_size
+
 
 ``max_query_size``: The maximum number of documents that will be downloaded from Elasticsearch in a single query. If you
 expect a large number of results, consider using ``use_count_query`` for the rule. If this
 limit is reached, a warning will be logged but ElastAlert 2 will continue without downloading more results. This setting will
 override a global ``max_query_size``. (Optional, int, default value of global ``max_query_size``)
 
-## `filter` 
+### `filter` 
 
 * == list of Elasticsearch query DSL filters /
   * 's format
@@ -504,21 +501,21 @@ override a global ``max_query_size``. (Optional, int, default value of global ``
 * Elasticsearch query DSL
 * ❌NO default❌
 
-## `include`
+### `include`
 
 ``include``: A list of terms that should be included in query results and passed to rule types and alerts. When set, only those
 fields, along with '@timestamp', ``query_key``, ``compare_key``, and ``top_count_keys``  are included, if present.
 (Optional, list of strings, default all fields)
 
-include_fields
-^^^^^^^^^^^^^^
+### include_fields
+
 
 ``include_fields``: A list of fields that should be included in query results and passed to rule types and alerts. If ``_source_enabled`` is False,
 only these fields and those from ``include`` are included.  When ``_source_enabled`` is True, these are in addition to source.  This is used
 for runtime fields, script fields, etc.  This only works with Elasticsearch version 7.11 and newer.  (Optional, list of strings, no default)
 
-include_rule_params_in_matches
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+### include_rule_params_in_matches
+
 
 ``include_rule_params_in_matches``: This is an optional list of rule parameter names that will have their values copied from the rule into the match records prior to sending out alerts. This allows alerters to have access to specific data in the originating rule. The parameters will be keyed into the match with a ``rule_param_`` prefix. For example, if the ``name`` rule parameter is specified in this list, the match record will have access to the rule name via the ``rule_param_name`` field. Including parameters with complex types, such as maps (Dictionaries) or lists (Arrays) can cause problems if the alerter is unable to convert these into formats that it needs. For example, including the ``query_key`` list parameter in matches that use the http_post2 alerter can cause JSON serialization errors.
 
@@ -532,13 +529,13 @@ Example::
     - name
     - some_custom_param
 
-include_rule_params_in_first_match_only
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+### include_rule_params_in_first_match_only
+
 
 ``include_rule_params_in_first_match_only``: When using the ``include_rule_params_in_matches`` setting mentioned above, optionally set to this setting to ``True`` to only copy the rule parameters into the first match record. This is primarily useful for aggregation rules that match hundreds or thousands of records during each run, and where only the first match is used in the alerter. The effectiveness of this setting is dependent upon which alerter(s) are being used. For example, using this setting with ``True`` in a rule that uses the http_post2 alerter will not be useful, since that alerter simply iterates across all matches and POSTs them to the HTTP URL. This would cause only the first POST to have the additional rule parameter values.
 
-top_count_keys
-^^^^^^^^^^^^^^
+### top_count_keys
+
 
 ``top_count_keys``: A list of fields. ElastAlert 2 will perform a terms query for the top X most common values for each of the fields,
 where X is 5 by default, or ``top_count_number`` if it exists.
@@ -547,24 +544,24 @@ have each username, for the top 5 usernames. When this is computed, the time ran
 to 10 minutes past the most recent event. Because ElastAlert 2 uses an aggregation query to compute this, it will attempt to use the
 field name plus ".keyword" to count unanalyzed terms. To turn this off, set ``raw_count_keys`` to false.
 
-top_count_number
-^^^^^^^^^^^^^^^^
+### top_count_number
+
 
 ``top_count_number``: The number of terms to list if ``top_count_keys`` is set. (Optional, integer, default 5)
 
-raw_count_keys
-^^^^^^^^^^^^^^
+### raw_count_keys
+
 
 ``raw_count_keys``: If true, all fields in ``top_count_keys`` will have ``.keyword`` appended to them.  This used to be ".raw" in older Elasticsearch versions, but the setting name `raw_count_keys` was left as-is to avoid breaking existing installations. (Optional, boolean, default true)
 
-description
-^^^^^^^^^^^
+### description
+
 
 ``description``: text describing the purpose of rule. (Optional, string, default empty string)
 Can be referenced in custom alerters to provide context as to why a rule might trigger.
 
-kibana_url
-^^^^^^^^^^
+### kibana_url
+
 
 ``kibana_url``: The base url of the Kibana application. If not specified, a URL will be constructed using ``es_host``
 and ``es_port``.
@@ -573,29 +570,29 @@ This value will be used if ``generate_kibana_discover_url`` is true and ``kibana
 
 (Optional, string, default ``http://<es_host>:<es_port>/_plugin/kibana/``)
 
-kibana_username
-^^^^^^^^^^^^^^^
+### kibana_username
+
 
 ``kibana_username``: The username used to make basic authenticated API requests against Kibana.
 This value is only used if ``shorten_kibana_discover_url`` is true.
 
 (Optional, string, no default)
 
-kibana_password
-^^^^^^^^^^^^^^^
+### kibana_password
+
 
 ``kibana_password``: The password used to make basic authenticated API requests against Kibana.
 This value is only used if ``shorten_kibana_discover_url`` is true.
 
 (Optional, string, no default)
 
-kibana_verify_certs
-^^^^^^^^^^^^^^^^^^^
+### kibana_verify_certs
+
 
 ``kibana_verify_certs``: Whether or not to verify TLS certificates when querying Kibana. (Optional, boolean, default True)
 
-generate_kibana_discover_url
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+### generate_kibana_discover_url
+
 
 ``generate_kibana_discover_url``: Enables the generation of the ``kibana_discover_url`` variable for the Kibana Discover application.
 This setting requires the following settings are also configured:
@@ -627,8 +624,8 @@ Example kibana_url + kibana_discover_app_url usage::
     alert_text_args: [ kibana_discover_url ]
     alert_text_type: alert_text_only
 
-shorten_kibana_discover_url
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+### shorten_kibana_discover_url
+
 
 ``shorten_kibana_discover_url``: Enables the shortening of the generated Kibana Discover urls.
 In order to use the Kibana Shorten URL REST API, the ``kibana_discover_app_url`` must be provided
@@ -642,8 +639,8 @@ supported authentication methods are:
 
 (Optional, bool, false)
 
-kibana_discover_app_url
-^^^^^^^^^^^^^^^^^^^^^^^
+### kibana_discover_app_url
+
 
 ``kibana_discover_app_url``: The url of the Kibana Discover application used to generate the ``kibana_discover_url`` variable.
 This value can use `$VAR` and `${VAR}` references to expand environment variables.
@@ -653,16 +650,16 @@ This value should be relative to the base kibana url defined by ``kibana_url`` a
 
 (Optional, string, no default)
 
-kibana_discover_security_tenant
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+### kibana_discover_security_tenant
+
 
 ``kibana_discover_security_tenant``: The Kibana security tenant to include in the generated
 ``kibana_discover_url`` variable.
 
 (Optional, string, no default)
 
-kibana_discover_version
-^^^^^^^^^^^^^^^^^^^^^^^
+### kibana_discover_version
+
 
 ``kibana_discover_version``: Older version of Kibana use an obsolete URL shortener API. If using a version between 7.0 and 7.15 you must specify that major and minor version here.
 
@@ -672,8 +669,8 @@ Example:
 
 ``kibana_discover_version: '7.15'``
 
-kibana_discover_index_pattern_id
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+### kibana_discover_index_pattern_id
+
 
 ``kibana_discover_index_pattern_id``: The id of the data view to link to in the Kibana Discover application.
 These ids are usually generated and can be found in url of the ``Data Views`` page, or by exporting its saved object.
@@ -696,32 +693,32 @@ You can modify an index pattern's id by exporting the saved object, modifying th
 
 ``kibana_discover_index_pattern_id: 4e97d188-8a45-4418-8a37-07ed69b4d34c``
 
-kibana_discover_columns
-^^^^^^^^^^^^^^^^^^^^^^^
+### kibana_discover_columns
+
 
 ``kibana_discover_columns``: The columns to display in the generated Kibana Discover application link.
 Defaults to the ``_source`` column.
 
 ``kibana_discover_columns: [ timestamp, message ]``
 
-kibana_discover_from_timedelta
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+### kibana_discover_from_timedelta
+
 
 ``kibana_discover_from_timedelta``:  The offset to the `from` time of the Kibana Discover link's time range.
 The `from` time is calculated by subtracting this timedelta from the event time.  Defaults to 10 minutes.
 
 ``kibana_discover_from_timedelta: minutes: 2``
 
-kibana_discover_to_timedelta
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+### kibana_discover_to_timedelta
+
 
 ``kibana_discover_to_timedelta``:  The offset to the `to` time of the Kibana Discover link's time range.
 The `to` time is calculated by adding this timedelta to the event time.  Defaults to 10 minutes.
 
 ``kibana_discover_to_timedelta: minutes: 2``
 
-opensearch_url
-^^^^^^^^^^^^^^
+### opensearch_url
+
 
 ``opensearch_url``: The base url of the opensearch application. If not specified, a URL will be constructed using ``es_host``
 and ``es_port``.
@@ -730,8 +727,8 @@ This value will be used if ``generate_opensearch_discover_url`` is true and ``op
 
 (Optional, string, default ``http://<opensearch_host>:<opensearch_port>/_plugin/_dashboards/``)
 
-generate_opensearch_discover_url
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+### generate_opensearch_discover_url
+
 
 ``generate_opensearch_discover_url``: Enables the generation of the ``opensearch_discover_url`` variable for the Opensearch Discover application.
 This setting requires the following settings are also configured:
@@ -763,8 +760,8 @@ Example opensearch_url + opensearch_discover_app_url usage for opensearch::
     alert_text_args: [ opensearch_discover_url ]
     alert_text_type: alert_text_only
 
-opensearch_discover_app_url
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+### opensearch_discover_app_url
+
 
 ``opensearch_discover_app_url``: The url of the opensearch Discover application used to generate the ``opensearch_discover_url`` variable.
 This value can use `$VAR` and `${VAR}` references to expand environment variables.
@@ -774,8 +771,8 @@ This value should be relative to the base opensearch url defined by ``opensearch
 
 (Optional, string, no default)
 
-opensearch_discover_version
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+### opensearch_discover_version
+
 
 ``opensearch_discover_version``: Specifies the version of the opensearch Discover application. Currently unused.
 
@@ -785,8 +782,8 @@ Example:
 
 ``opensearch_discover_version: '2.11'``
 
-opensearch_discover_index_pattern_id
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+### opensearch_discover_index_pattern_id
+
 
 ``opensearch_discover_index_pattern_id``: The id of the index pattern to link to in the opensearch Discover application.
 These ids are usually generated and can be found in url of the index pattern management page, or by exporting its saved object.
@@ -808,38 +805,38 @@ You can modify an index pattern's id by exporting the saved object, modifying th
 
 ``opensearch_discover_index_pattern_id: 4e97d188-8a45-4418-8a37-07ed69b4d34c``
 
-opensearch_discover_columns
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+### opensearch_discover_columns
+
 
 ``opensearch_discover_columns``: The columns to display in the generated opensearch Discover application link.
 Defaults to the ``_source`` column.
 
 ``opensearch_discover_columns: [ timestamp, message ]``
 
-opensearch_discover_from_timedelta
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+### opensearch_discover_from_timedelta
+
 
 ``opensearch_discover_from_timedelta``:  The offset to the `from` time of the opensearch Discover link's time range.
 The `from` time is calculated by subtracting this timedelta from the event time.  Defaults to 10 minutes.
 
 ``opensearch_discover_from_timedelta: minutes: 2``
 
-opensearch_discover_to_timedelta
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+### opensearch_discover_to_timedelta
+
 
 ``opensearch_discover_to_timedelta``:  The offset to the `to` time of the opensearch Discover link's time range.
 The `to` time is calculated by adding this timedelta to the event time.  Defaults to 10 minutes.
 
 ``opensearch_discover_to_timedelta: minutes: 2``
 
-use_local_time
-^^^^^^^^^^^^^^
+### use_local_time
+
 
 ``use_local_time``: Whether to convert timestamps to the local time zone in alerts. If false, timestamps will
 be converted to UTC, which is what ElastAlert 2 uses internally. (Optional, boolean, default true)
 
-match_enhancements
-^^^^^^^^^^^^^^^^^^
+### match_enhancements
+
 
 ``match_enhancements``: A list of enhancement modules to use with this rule. An enhancement module is a subclass of enhancements.BaseEnhancement
 that will be given the match dictionary and can modify it before it is passed to the alerter. The enhancements will be run after silence and realert
@@ -847,15 +844,15 @@ is calculated and in the case of aggregated alerts, right before the alert is se
 The enhancements should be specified as
 ``module.file.EnhancementName``. See :ref:`Enhancements` for more information. (Optional, list of strings, no default)
 
-run_enhancements_first
-^^^^^^^^^^^^^^^^^^^^^^
+### run_enhancements_first
+
 
 ``run_enhancements_first``: If set to true, enhancements will be run as soon as a match is found. This means that they can be changed
 or dropped before affecting realert or being added to an aggregation. Silence stashes will still be created before the
 enhancement runs, meaning even if a ``DropMatchException`` is raised, the rule will still be silenced. (Optional, boolean, default false)
 
-query_key
-^^^^^^^^^
+### query_key
+
 
 ``query_key``: Having a query key means that realert time will be counted separately for each unique value of ``query_key``. For rule types which
 count documents, such as spike, frequency and flatline, it also means that these counts will be independent for each unique value of ``query_key``.
@@ -865,46 +862,46 @@ additional alerts for ``{'username': 'bob'}`` will be ignored while other userna
 treated as if it were a single field whose value is the component values, or "None", joined by commas. A new field with the key
 "field1,field2,etc" will be created in each document and may conflict with existing fields of the same name.
 
-aggregation_key
-^^^^^^^^^^^^^^^
+### aggregation_key
+
 
 ``aggregation_key``: Having an aggregation key in conjunction with an aggregation will make it so that each new value encountered for the aggregation_key field will result in a new, separate aggregation window.
 
-summary_table_fields
-^^^^^^^^^^^^^^^^^^^^
+### summary_table_fields
+
 
 ``summary_table_fields``: Specifying the summmary_table_fields in conjunction with an aggregation will make it so that each aggregated alert will contain a table summarizing the values for the specified fields in all the matches that were aggregated together.
 
-summary_table_type
-^^^^^^^^^^^^^^^^^^^^
+### summary_table_type
+
 
 ``summary_table_type``: One of: ``ascii`` or ``markdown`` or ``html``. Select the table type to use for the aggregation summary. Defaults to ``ascii`` for the classical text based table.
 
-summary_table_max_rows
-^^^^^^^^^^^^^^^^^^^^^^
+### summary_table_max_rows
+
 
 ``summary_table_max_rows``: Limit the maximum number of rows that will be shown in the summary table.
 
-summary_prefix
-^^^^^^^^^^^^^^^^^^^^
+### summary_prefix
+
 
 ``summary_prefix``: Specify a prefix string, which will be added in front of the aggregation summary table. This string is currently not subject to any formatting.
 
-summary_suffix
-^^^^^^^^^^^^^^^^^^^^
+### summary_suffix
+
 
 ``summary_suffix``: Specify a suffix string, which will be added after the aggregation summary table. This string is currently not subject to any formatting.
 
-timestamp_field
-^^^^^^^^^^^^^^^
+### timestamp_field
+
 
 ``timestamp_field``: Specify the name of the document field containing the timestamp. 
 By default, the field ``@timestamp`` is used to query Elasticsearch. 
 If ``timestamp_field`` is set, this date field will be considered whenever querying, filtering and aggregating based on timestamps.
 (Optional, string, default @timestamp).
 
-timestamp_type
-^^^^^^^^^^^^^^
+### timestamp_type
+
 
 ``timestamp_type``: One of ``iso``, ``unix``, ``unix_ms``, ``custom``. This option will set the type of ``@timestamp`` (or ``timestamp_field``)
 used to query Elasticsearch. ``iso`` will use ISO8601 timestamps, which will work with most Elasticsearch date type field. ``unix`` will
@@ -912,15 +909,15 @@ query using an integer unix (seconds since 1/1/1970) timestamp. ``unix_ms`` will
 your own ``timestamp_format``. The default is ``iso``.
 (Optional, string enum, default iso).
 
-timestamp_format
-^^^^^^^^^^^^^^^^
+### timestamp_format
+
 
 ``timestamp_format``: In case Elasticsearch used custom date format for date type field, this option provides a way to define custom timestamp
 format to match the type used for Elastisearch date type field. This option is only valid if ``timestamp_type`` set to ``custom``.
 (Optional, string, default '%Y-%m-%dT%H:%M:%SZ').
 
-timestamp_format_expr
-^^^^^^^^^^^^^^^^^^^^^
+### timestamp_format_expr
+
 
 ``timestamp_format_expr``: In case Elasticsearch used custom date format for date type field, this option provides a way to adapt the
 value obtained converting a datetime through ``timestamp_format``, when the format cannot match perfectly what defined in Elasticsearch.
@@ -933,8 +930,8 @@ Setting ``timestamp_format_expr: 'ts[:23] + ts[26:]'`` will truncate the value t
 This option is only valid if ``timestamp_type`` set to ``custom``.
 (Optional, string, no default).
 
-timestamp_to_datetime_format_expr
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+### timestamp_to_datetime_format_expr
+
 
 ``timestamp_to_datetime_format_expr``: In the same spirit as timestamp_format_expr, in case Elasticsearch used custom date format for date type field,
 this option provides a way to adapt the value (as a string) returned by an Elasticsearch query before converting it into a datetime used by elastalert.
@@ -944,16 +941,16 @@ For example, when the date type field returned by Elasticsearch uses nanoseconds
 option is ``'%Y-%m-%dT%H:%M:%S.%f'`` (ns are not supported in python datetime.datetime.strptime), Elasticsearch would fail to parse the timestamp terms as they contain nanoseconds values - that is it gets 3 additional digits that can't be parsed, throwing the exception``ValueError: unconverted data remains: XXX``. Setting ``timestamp_to_datetime_format_expr: 'ts[:23]'`` will truncate the value to milliseconds, allowing a good conversion in a datetime object. This option is only valid if ``timestamp_type`` set to ``custom``. 
 (Optional, string, no default).
 
-_source_enabled
-^^^^^^^^^^^^^^^
+### _source_enabled
+
 
 ``_source_enabled``: If true, ElastAlert 2 will use _source to retrieve fields from documents in Elasticsearch. If false,
 ElastAlert 2 will use ``fields`` to retrieve stored fields. Both of these are represented internally as if they came from ``_source``.
 See https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-fields.html for more details. The fields used come from ``include``,
 see above for more details. (Optional, boolean, default True)
 
-scan_entire_timeframe
-^^^^^^^^^^^^^^^^^^^^^
+### scan_entire_timeframe
+
 
 ``scan_entire_timeframe``: If true, when ElastAlert 2 starts, it will always start querying at the current time minus the timeframe.
 ``timeframe`` must exist in the rule. This may be useful, for example, if you are using a flatline rule type with a large timeframe,
@@ -963,8 +960,8 @@ scan the same range again, triggering duplicate alerts.
 
 Some rules and alerts require additional options, which also go in the top level of the rule configuration file.
 
-query_timezone
-^^^^^^^^^^^^^^
+### query_timezone
+
 
 ``query_timezone``: Whether to convert UTC time to the specified time zone in rule queries.
 If not set, start and end time of query will be used UTC. (Optional, string, default empty string)
@@ -999,7 +996,7 @@ Example value : query_timezone: "Europe/Istanbul"
     * printing out debug alerts OR trigger real alerts
 * by default, run ElastAlert 2 | last 24 hours
 
-### | Docker
+## | Docker
 
 ```bash
 $ docker run --rm -it --net es_default \
@@ -1010,7 +1007,7 @@ $ docker run --rm -it --net es_default \
     /opt/elastalert/rules/example_frequency.yaml
 ```
 
-
+TODO: 
 
      
 Also note that datetime objects are converted to ISO8601 timestamps when uploaded to Elasticsearch
@@ -1091,8 +1088,7 @@ guaranteed to have the exact same results as with Elasticsearch. For example, an
 
 It is possible to mix between blacklist value definitions, or use either one. The ``compare_key`` term must be equal to one of these values for it to match.
 
-Whitelist
-~~~~~~~~~
+## Whitelist
 
 ``whitelist``: Similar to ``blacklist``, this rule will compare a certain field to a whitelist, and match if the list does not contain
 the term.
@@ -1113,8 +1109,7 @@ This rule requires three additional options:
 
 It is possible to mix between whitelisted value definitions, or use either one. The ``compare_key`` term must be in this list or else it will match.
 
-Change
-~~~~~~
+## Change
 
 For an example configuration file using this rule type, look at ``examples/rules/example_change.yaml``.
 
@@ -1136,8 +1131,7 @@ There is also an optional field:
 ``timeframe``: The maximum time between changes. After this time period, ElastAlert 2 will forget the old value
 of the ``compare_key`` field.
 
-Frequency
-~~~~~~~~~
+## Frequency
 
 For an example configuration file using this rule type, look at ``examples/rules/example_frequency.yaml``.
 
@@ -1169,8 +1163,7 @@ all with the same value of ``query_key``, will trigger an alert.
 ``attach_related``: Will attach all the related events to the event that triggered the frequency alert. For example in an alert triggered with ``num_events``: 3,
 the 3rd event will trigger the alert on itself and add the other 2 events in a key named ``related_events`` that can be accessed in the alerter.
 
-Spike
-~~~~~
+## Spike
 
 ``spike``: This rule matches when the volume of events during a given time period is ``spike_height`` times larger or smaller
 than during the previous time period. It uses two sliding windows to compare the current and reference frequency
@@ -1303,8 +1296,7 @@ default 50, unique terms.
   Matches of the rule type ``spike`` contain two additional fields: ``spike_count`` contains the number of events that occurred during the
   current timeframe. ``reference_count`` contains the number of events that occurred during the reference timeframe.
 
-Flatline
-~~~~~~~~
+## Flatline
 
 ``flatline``: This rule matches when the total number of events is under a given ``threshold`` for a time period.
 
@@ -1332,8 +1324,7 @@ and then falls below the threshold. To reference the query_key value within a fl
 ``forget_keys``: Only valid when used with ``query_key``. If this is set to true, ElastAlert 2 will "forget" about the ``query_key`` value that
 triggers an alert, therefore preventing any more alerts for it until it's seen again.
 
-New Term
-~~~~~~~~
+## New Term
 
 ``new_term``: This rule matches when a new value appears in a field that has never been seen before. When ElastAlert 2 starts, it will
 use an aggregation query to gather all known terms for a list of fields.
@@ -1378,8 +1369,7 @@ that if a new term appears but there are at least 50 terms which appear more fre
 initial query. These are non-analyzed fields added by Logstash. If the field used is analyzed, the initial query will return
 only the tokenized values, potentially causing false positives. Defaults to true.
 
-Cardinality
-~~~~~~~~~~~
+## Cardinality
 
 ``cardinality``: This rule matches when a the total number of unique values for a certain field within a time frame is higher or lower
 than a threshold.
@@ -1403,8 +1393,7 @@ Optional:
 
 ``query_key``: Group cardinality counts by this field. For each unique value of the ``query_key`` field, cardinality will be counted separately.
 
-Metric Aggregation
-~~~~~~~~~~~~~~~~~~
+## Metric Aggregation
 
 ``metric_aggregation``: This rule matches when the value of a metric within the calculation window is higher or lower than a threshold. By
 default this is ``buffer_time``.
@@ -1463,8 +1452,7 @@ more comprehensive explaination.
 See: https://docs.python.org/3.4/library/string.html#format-specification-mini-language
 
 
-Spike Aggregation
-~~~~~~~~~~~~~~~~~~
+## Spike Aggregation
 
 ``spike_aggregation``: This rule matches when the value of a metric within the calculation window is ``spike_height`` times larger or smaller
 than during the previous time period. It uses two sliding windows to compare the current and reference metric values.
@@ -1512,8 +1500,7 @@ the reference window is less than a third of that value.
 ``min_doc_count``: The minimum number of events in the current window needed for an alert to trigger.  Used in conjunction with ``query_key``,
 this will only consider terms which in their last ``buffer_time`` had at least ``min_doc_count`` records.  Default 1.
 
-Percentage Match
-~~~~~~~~~~~~~~~~
+## Percentage Match
 
 ``percentage_match``: This rule matches when the percentage of document in the match bucket within a calculation window is higher or lower
 than a threshold. By default the calculation window is ``buffer_time``.
